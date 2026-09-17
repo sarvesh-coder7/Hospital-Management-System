@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find a Doctor - NeuraCare</title>
+<link rel="icon" href="../Assets/Images/CMS Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --white:   #FFFFFF;
+    --bg:      #F5F7F5;
+    --card:    #F5F5F5;
+    --card2:   #F8F9FA;
+    --text:    #333333;
+    --muted:   #6B7280;
+    --accent:  #2E8B57;
+    --accent2: #3DAA6E;
+    --border:  #E4E9E4;
+    --sidebar: #1A2E1F;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  #nav-toggle { display: none; }
+
+  .hamburger {
+    position: fixed;
+    top: 12px; left: 18px;
+    z-index: 200;
+    cursor: pointer;
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px rgba(46,139,87,0.3);
+  }
+
+  .hamburger span {
+    display: block;
+    width: 18px; height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  #nav-toggle:checked ~ .hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  #nav-toggle:checked ~ .hamburger span:nth-child(2) { opacity: 0; }
+  #nav-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh; width: 250px;
+    background: var(--sidebar);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    padding-top: 80px;
+  }
+
+  #nav-toggle:checked ~ .sidebar { transform: translateX(0); }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo span {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px; color: #fff;
+  }
+
+  .sidebar-logo span b { color: var(--accent2); }
+
+  .sidebar-separator{
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin: 16px 12px;
+  }
+
+  .sidebar nav ul { list-style: none; padding: 0 12px; }
+
+  .sidebar nav ul li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    color: #B0C4B8;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar nav ul li a:hover,
+  .sidebar nav ul li a.active {
+    background: rgba(46,139,87,0.2);
+    color: #fff;
+  }
+
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 64px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px 0 72px;
+    z-index: 50;
+    gap: 16px;
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+  }
+
+  #nav-toggle:checked ~ header.topbar {
+    margin-left: 250px;
+  }
+
+  .topbar-brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px; color: var(--text);
+  }
+
+  .topbar-brand b { color: var(--accent); }
+
+  .topbar-search {
+    flex: 1;
+    max-width: 460px;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card2);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 0 14px; height: 40px;
+    transition: border-color .15s;
+  }
+  .topbar-search:focus-within { border-color: var(--accent); background: var(--white); }
+  .topbar-search svg { width: 16px; height: 16px; color: var(--muted); flex-shrink: 0; }
+  .topbar-search input {
+    flex: 1; background: none; border: none; outline: none;
+    font-family: inherit; font-size: 14px; color: var(--text);
+  }
+  .topbar-search input::placeholder { color: var(--muted); }
+
+  .topbar-actions { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+  .btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-outline {
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    padding: 6px 18px;
+  }
+
+  .btn-outline:hover { background: rgba(46,139,87,0.06); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff; border: none;
+  }
+
+  .btn-primary:hover { background: var(--accent2); }
+
+  main {
+    padding: 96px 40px 60px;
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+  }
+
+  #nav-toggle:checked ~ main {
+    margin-left: 250px;
+  }
+
+  /* ── Page header ── */
+  .page-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px; margin-bottom: 8px;
+  }
+  .page-head h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.1rem; color: var(--text); margin-bottom: 6px;
+  }
+  .page-head h1 span { color: var(--accent); }
+  .page-head p { color: var(--muted); font-size: 14px; }
+
+  .filter-bar {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin: 26px 0 30px;
+  }
+  .filter-bar select {
+    font-family: inherit; font-size: 13.5px; color: var(--text);
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 9px 14px; outline: none; cursor: pointer;
+  }
+  .filter-bar select:focus { border-color: var(--accent); }
+  .result-count { font-size: 13px; color: var(--muted); margin-left: auto; align-self: center; }
+
+  /* ── Doctor card (ported from the booking flow) ── */
+  .doc-grid { display: flex; flex-direction: column; gap: 16px; }
+
+  .doc-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    display: flex; gap: 22px; align-items: flex-start;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    position: relative; overflow: hidden;
+    transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
+    animation: fadeUp .4s ease both;
+  }
+  .doc-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: linear-gradient(180deg, var(--accent), var(--accent2));
+    border-radius: 14px 0 0 14px;
+  }
+  .doc-card:hover {
+    box-shadow: 0 10px 30px rgba(46,139,87,.14);
+    border-color: #bfe3cd;
+    transform: translateY(-2px);
+  }
+
+  .card-left {
+    display: flex; flex-direction: column; align-items: center; gap: 9px;
+    flex-shrink: 0; min-height: 170px;
+  }
+  .doc-avatar {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: linear-gradient(135deg, #DCF3E5, #EFFBF3);
+    border: 3px solid #DCF3E5;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px; color: var(--accent);
+  }
+  .card-tags { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: auto; }
+.brand-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#14532d;
+    color:#fff;
+    border-radius:8px;
+    padding:5px 10px;
+    font-size:11px;
+    font-weight:700;
+    white-space:nowrap;
+    min-width:max-content;
+
+  }
+  .brand-pill svg { width: 10px; height: 10px; fill: white; }
+  .brand-pill-icon { width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .brand-pill-icon img { width: 14px; height: 14px; object-fit: contain; display: block; border-radius: 2px; }
+  .brand-pill-icon svg { width: 11px; height: 11px; fill: white; }
+
+  .verified-pill{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#dcfce7;
+    color:#166534;
+    border-radius:8px;
+    padding:6px 9px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.verified-pill svg{
+    width:16px;
+    height:16px;
+    background:#22c55e;
+    color:#fff;
+    border-radius:50%;
+    padding:2px;
+}
+  .card-body { flex: 1; min-width: 0; }
+  .card-top-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .doc-name { font-size: 17px; font-weight: 700; color: var(--text); }
+  .doc-spec { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .on-time-badge {
+    background: var(--sidebar); color: #fff; border-radius: 6px;
+    padding: 4px 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: .04em; white-space: nowrap; flex-shrink: 0;
+  }
+  .doc-qual {
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    letter-spacing: .03em; margin: 10px 0 6px;
+  }
+  .doc-meta {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    font-size: 12.5px; color: #4b5563; margin-bottom: 2px;
+  }
+  .doc-meta span { display: flex; align-items: center; gap: 5px; }
+  .doc-meta svg { width: 13px; height: 13px; color: var(--accent); flex-shrink: 0; }
+
+  .card-footer {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-top: 16px; flex-wrap: wrap; gap: 12px;
+  }
+  .rating-row { display: flex; flex-direction: column; gap: 6px; }
+  .rating-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(46,139,87,.12); color: var(--accent);
+    border-radius: 20px; padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+  }
+  .avail-row { display: flex; align-items: center; gap: 6px; }
+  .avail-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; }
+  .avail-text { font-size: 12px; color: var(--accent); font-weight: 600; }
+
+  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  .doc-fee { font-size: 21px; font-weight: 800; color: var(--text); }
+  .doc-fee span { font-size: 12px; font-weight: 400; color: var(--muted); }
+  .card-actions { display: flex; gap: 9px; }
+  .btn-profile {
+    padding: 9px 16px; border: 1.5px solid var(--accent);
+    color: var(--accent); border-radius: 8px; font-size: 13px;
+    font-weight: 600; background: var(--white); transition: background .15s;
+  }
+  .btn-profile:hover { background: rgba(46,139,87,.06); }
+  .btn-book {
+    padding: 9px 20px; background: var(--accent);
+    color: #fff; border-radius: 8px; font-size: 13px; font-weight: 700;
+    transition: background .15s, transform .1s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-book:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-state h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 720px) {
+    .doc-card { flex-direction: column; align-items: center; text-align: center; }
+    .card-right { align-items: center; width: 100%; }
+    .card-footer { flex-direction: column; align-items: center; }
+  }
+</style>
+</head>
+<body>
+
+<input type="checkbox" id="nav-toggle" checked>
+
+<label class="hamburger" for="nav-toggle">
+  <span></span><span></span><span></span>
+</label>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span>Neura<b>Care</b></span>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="/">🏠 Home</a></li>
+      <li><a href="09-Services.html">🩺 Services</a></li>
+      <li><a href="08-Doctors.html" class="active">👨‍⚕️ Doctors</a></li>
+      <li><a href="02-Login.html">📅 Appointments</a></li>
+      <li><a href="#">💊 Pharmacy</a></li>
+      <li><a href="#">📋 Records</a></li>
+      <li><a href="#">📞 Contact</a></li>
+      <li class="sidebar-separator"></li>
+      <li><a href="07-Developer.html">&lt;/&gt; Developer</a></li>
+    </ul>
+  </nav>
+</aside>
+
+<header class="topbar">
+  <div class="topbar-brand">Neura<b>Care</b></div>
+  <div class="topbar-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="docSearch" placeholder="Search doctors, specialities, conditions..." />
+  </div>
+  <div class="topbar-actions">
+    <a href="02-Login.html" class="btn btn-outline">Login</a>
+  </div>
+</header>
+
+<main>
+
+  <div class="page-head">
+    <div>
+      <h1>Find your <span>doctor</span></h1>
+      <p>Verified specialists across every NeuraCare clinic — book in-person or online.</p>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <select id="specFilter">
+      <option value="">All Specialities</option>
+    </select>
+    <select id="sortFilter">
+      <option value="relevance">Sort: Relevance</option>
+      <option value="fee-asc">Fee: Low → High</option>
+      <option value="fee-desc">Fee: High → Low</option>
+      <option value="exp">Experience</option>
+      <option value="rating">Rating</option>
+    </select>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+
+  <div class="doc-grid" id="docGrid"></div>
+
+</main>
+
+<script>
+const DOCTORS = [
+  {name:'Dr. Priya Ramesh',      spec:'General Physician', qual:'MBBS, MD (General Medicine)',  exp:6,  fee:760,  clinic:'NeuraCare Clinic – Chennai',         loc:'Chennai',    rating:92, patients:'1.2K+', avail:'Online Consult Available', verified:true,  init:'PR'},
+  {name:'Dr. Arjun Krishnan',    spec:'Cardiologist',      qual:'MBBS, MD, DM (Cardiology)',    exp:14, fee:1200, clinic:'NeuraCare Heart Centre – Bangalore', loc:'Bangalore',  rating:97, patients:'3.8K+', avail:'Online & In-Clinic Available', verified:true,  init:'AK'},
+  {name:'Dr. Meena Subramanian', spec:'Neurologist',       qual:'MBBS, DM (Neurology)',         exp:9,  fee:950,  clinic:'NeuraCare Brain & Spine – Chennai',  loc:'Chennai',    rating:89, patients:'890+',  avail:'Online Consult Available', verified:true,  init:'MS'},
+  {name:'Dr. Rajesh Iyer',       spec:'Dermatologist',     qual:'MBBS, MD (Dermatology)',       exp:4,  fee:499,  clinic:'NeuraCare Skin Clinic – Hyderabad',  loc:'Hyderabad',  rating:88, patients:'620+',  avail:'In-Clinic Available', verified:false, init:'RI'},
+  {name:'Dr. Kavitha Nair',      spec:'Pediatrician',      qual:'MBBS, MD (Paediatrics)',       exp:11, fee:700,  clinic:'NeuraCare Child Care – Mumbai',      loc:'Mumbai',     rating:95, patients:'2.1K+', avail:'Online & In-Clinic Available', verified:true,  init:'KN'},
+  {name:'Dr. Suresh Pandey',     spec:'Orthopedic',        qual:'MBBS, MS (Orthopaedics)',      exp:16, fee:1100, clinic:'NeuraCare Ortho Centre – Delhi',     loc:'Delhi',      rating:93, patients:'1.7K+', avail:'In-Clinic Available', verified:true,  init:'SP'},
+  {name:'Dr. Ananya Das',        spec:'Dentist',           qual:'BDS, MDS (Prosthodontics)',    exp:7,  fee:550,  clinic:'NeuraCare Dental – Bangalore',       loc:'Bangalore',  rating:91, patients:'940+',  avail:'Online & In-Clinic Available', verified:true,  init:'AD'},
+  {name:'Dr. Mohan Venkatesh',   spec:'ENT',               qual:'MBBS, MS (ENT)',               exp:12, fee:800,  clinic:'NeuraCare ENT Centre – Chennai',     loc:'Chennai',    rating:90, patients:'1.1K+', avail:'Online Consult Available', verified:false, init:'MV'},
+];
+
+const grid   = document.getElementById('docGrid');
+const count  = document.getElementById('resultCount');
+const search = document.getElementById('docSearch');
+const specEl = document.getElementById('specFilter');
+const sortEl = document.getElementById('sortFilter');
+
+[...new Set(DOCTORS.map(d => d.spec))].forEach(s => {
+  const opt = document.createElement('option');
+  opt.value = s; opt.textContent = s;
+  specEl.appendChild(opt);
+});
+
+function locIcon() {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+}
+function clinicIcon() {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`;
+}
+
+function render(list) {
+  count.textContent = `${list.length} doctor${list.length !== 1 ? 's' : ''} found`;
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><h3>No doctors match your search</h3><p>Try a different speciality or clear your filters.</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map((d, i) => `
+    <div class="doc-card" style="animation-delay:${i * 50}ms">
+      <div class="card-left">
+        <div class="doc-avatar">${d.init}</div>
+        <div class="card-tags">
+          <div class="brand-pill"><span class="brand-pill-icon"><img src="../Assets/Images/CMS Logo.png" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"/><svg viewBox="0 0 24 24" style="display:none"><path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/></svg></span>NeuraCare</div>
+          ${d.verified ? `<div class="verified-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Verified</div>` : ''}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="doc-name">${d.name}</div>
+            <div class="doc-spec">${d.spec}</div>
+          </div>
+          <div class="on-time-badge">ON TIME GUARANTEE</div>
+        </div>
+        <div class="doc-qual">${d.exp} YEARS &bull; ${d.qual}</div>
+        <div class="doc-meta">
+          <span>${locIcon()}${d.loc}</span>
+          <span>${clinicIcon()}${d.clinic}</span>
+        </div>
+        <div class="card-footer">
+          <div class="rating-row">
+            <div class="rating-pill">👍 ${d.rating}% (${d.patients} Patients)</div>
+            <div class="avail-row"><span class="avail-dot"></span><span class="avail-text">${d.avail}</span></div>
+          </div>
+          <div class="card-right">
+            <div class="doc-fee">₹${d.fee} <span>/ session</span></div>
+            <div class="card-actions">
+              <button class="btn-profile" onclick="window.location.href='05-Patient-dashboard.html'">View Profile</button>
+              <a class="btn-book" href="02-Login.html">Book Appointment</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function applyFilters() {
+  const q    = search.value.trim().toLowerCase();
+  const spec = specEl.value;
+  const sortBy = sortEl.value;
+
+  let list = DOCTORS.filter(d => {
+    const matchesQuery = !q || d.name.toLowerCase().includes(q) || d.spec.toLowerCase().includes(q);
+    const matchesSpec  = !spec || d.spec === spec;
+    return matchesQuery && matchesSpec;
+  });
+
+  if (sortBy === 'fee-asc')  list.sort((a, b) => a.fee - b.fee);
+  if (sortBy === 'fee-desc') list.sort((a, b) => b.fee - a.fee);
+  if (sortBy === 'exp')      list.sort((a, b) => b.exp - a.exp);
+  if (sortBy === 'rating')   list.sort((a, b) => b.rating - a.rating);
+
+  render(list);
+}
+
+search.addEventListener('input', applyFilters);
+specEl.addEventListener('change', applyFilters);
+sortEl.addEventListener('change', applyFilters);
+
+render(DOCTORS);
+</script>
+
+
+
+</body>
+</html>

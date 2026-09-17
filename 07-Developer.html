@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer - NeuraCare</title>
+<link rel="icon" href="../Assets/Images/CMS Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --white:   #FFFFFF;
+    --bg:      #F5F7F5;
+    --card:    #F5F5F5;
+    --card2:   #F8F9FA;
+    --text:    #333333;
+    --muted:   #6B7280;
+    --accent:  #2E8B57;
+    --accent2: #3DAA6E;
+    --border:  #E4E9E4;
+    --sidebar: #1A2E1F;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  #nav-toggle { display: none; }
+
+  .hamburger {
+    position: fixed;
+    top: 12px; left: 18px;
+    z-index: 200;
+    cursor: pointer;
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 8px rgba(46,139,87,0.3);
+  }
+
+  .hamburger span {
+    display: block;
+    width: 18px; height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  #nav-toggle:checked ~ .hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  #nav-toggle:checked ~ .hamburger span:nth-child(2) { opacity: 0; }
+  #nav-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh; width: 250px;
+    background: var(--sidebar);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+    padding-top: 80px;
+  }
+
+  #nav-toggle:checked ~ .sidebar { transform: translateX(0); }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo span {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px; color: #fff;
+  }
+
+  .sidebar-logo span b { color: var(--accent2); }
+
+  .sidebar-separator{
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin: 16px 12px;
+  }
+
+  .sidebar nav ul { list-style: none; padding: 0 12px; }
+
+  .sidebar nav ul li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    color: #B0C4B8;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar nav ul li a:hover,
+  .sidebar nav ul li a.active {
+    background: rgba(46,139,87,0.2);
+    color: #fff;
+  }
+
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 64px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px 0 72px;
+    z-index: 50;
+    gap: 16px;
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+  }
+
+  #nav-toggle:checked ~ header.topbar {
+    margin-left: 250px;
+  }
+
+  .topbar-brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px; color: var(--text);
+    flex: 1;
+  }
+
+  .topbar-brand b { color: var(--accent); }
+
+  .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+  .btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-outline {
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+  }
+
+  .btn-outline:hover { background: rgba(46,139,87,0.06); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff; border: none;
+  }
+
+  .btn-primary:hover { background: var(--accent2); }
+
+  main {
+    padding: 90px 40px 60px;
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+  }
+
+  #nav-toggle:checked ~ main {
+    margin-left: 250px;
+  }
+
+  /* ── Developer-page-style content block ── */
+  .dev-wrap { 
+    width: 100%;
+    max-width: none; 
+  }
+
+  .badge-pill {
+    display: inline-block;
+    background: rgba(46,139,87,0.12);
+    color: var(--accent);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: .02em;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+
+  .dev-heading {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 22px;
+  }
+  .dev-heading .accent-line { color: var(--accent); display: block; }
+
+  .dev-para {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--muted);
+    max-width: 100%;
+    margin-bottom: 36px;
+  }
+
+  .dev-divider {
+    width: 48px; height: 2px;
+    background: var(--text);
+    margin-bottom: 30px;
+  }
+
+  .dev-label {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .dev-list { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+  .dev-list li {
+    display: flex; gap: 13px;
+    font-size: 14.5px; line-height: 1.75;
+    color: var(--muted);
+  }
+  .dev-list li::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .dev-list li b { color: var(--accent); font-weight: 600; }
+
+
+/* ── Quick stats strip, echoes the homepage stat-cards ── */
+  .svc-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin: 48px 0 8px;
+    max-width: none;
+    margin-bottom: 50px;
+  }
+  .svc-stat .num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem; color: var(--accent);
+  }
+  .svc-stat .label {
+    font-size: 11.5px; color: var(--muted);
+    margin-top: 3px; line-height: 1.4;
+  }
+    .cta-banner{
+      background: var(--sidebar);
+      border-radius: 14px;
+      padding: 36px 40px;
+      margin-bottom: 48px;
+      color: #ffffff;
+    }
+
+    .cta-banner h2{
+      font-family: 'DM Serif Display', serif;
+      font-weight: normal;
+      font-size: 1.5rem;
+      margin-bottom: 14px;
+    }
+
+    .cta-banner p{
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: #C7DBCD;
+      width: 100%;
+      max-width: none;
+    }
+
+    .cta-banner .email{
+      margin-top: 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--accent2);
+    }
+  
+
+  @media (max-width: 768px) {
+    .dev-heading { font-size: 2rem; }
+    .svc-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<input type="checkbox" id="nav-toggle" checked>
+
+<label class="hamburger" for="nav-toggle">
+  <span></span><span></span><span></span>
+</label>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span>Neura<b>Care</b></span>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="/">🏠 Home</a></li>
+      <li><a href="09-Services.html">🩺 Services</a></li>
+      <li><a href="08-Doctors.html">👨‍⚕️ Doctors</a></li>
+      <li><a href="02-Login.html">📅 Appointments</a></li>
+      <li><a href="#">💊 Pharmacy</a></li>
+      <li><a href="#">📋 Records</a></li>
+      <li><a href="#">📞 Contact</a></li>
+      <li class="sidebar-separator"></li>
+      <li><a href="07-Developer.html" class="active">&lt;/&gt; Developer</a></li>
+    </ul>
+  </nav>
+</aside>
+
+<header class="topbar">
+  <div class="topbar-brand">Neura<b>Care</b></div>
+</header>
+
+<main>
+
+  <div class="dev-wrap">
+
+    <span class="badge-pill">Developer page</span>
+
+    <h1 class="dev-heading">
+      Your clinic. Your data.
+      <span class="accent-line">Your website — built for you.</span>
+    </h1>
+
+    <p class="dev-para">
+      NeuraCare is a sample clinic management website created to showcase how a modern healthcare platform can look and function.If you provide your clinic or hospital details, the platform can be personalized with your branding, doctors, services, and contact information., We will personalise and deploy this entire platform for you.
+    </p>
+
+    <div class="dev-divider"></div>
+
+    <p class="dev-label">WHAT YOU GET WHEN YOU SHARE YOUR CLINIC DETAILS</p>
+
+    <ul class="dev-list">
+      <li><b>A fully branded website</b> with your clinic name, logo, specialisations, and contact info — ready to go live.</li>
+      <li><b>Doctor profiles</b>for every doctor in your clinic — their specialisation, qualifications, and availability, all listed and manageable.</li>
+      <li><b>Patient records system &amp;</b>  — I'll handle how patient data is structured and stored securely in a database. You just tell me what your clinic needs to track.</li>
+      <li><b>Online appointment booking&amp; care units</b> — patients can book slots directly, and your staff can view and manage them.</li>
+      <li><b>Lab result portal &amp; sample pickup</b>— a separate login for your lab in-charge to upload results by patient ID, and patients can securely view their own reports after logging in.</li>
+      <li><b>Pharmacy section,</b> contact page, and any other module your clinic needs — all customised to fit your workflow.</li>
+      <li><b>AI-powered chatbot assistant</b> — an intelligent virtual assistant available across all pages to answer patient queries, guide users through appointments, provide clinic information, and offer instant support 24/7.</li>
+    </ul>
+
+    <div class="svc-stats">
+
+      <div class="svc-stat"><div class="num">8+</div><div class="label">Integrated Modules</div></div>
+      <div class="svc-stat"><div class="num">15+</div><div class="label">Custom Features</div></div>
+      <div class="svc-stat"><div class="num">100%</div><div class="label">Clinic Customizable</div></div>
+      <div class="svc-stat"><div class="num">1</div><div class="label">Complete Healthcare Platform</div></div>
+    </div>
+
+    <div class="cta-banner">
+      <div>
+        <h2>Interested? Let's talk.</h2>
+
+        <p>
+          Just share your clinic name, the departments you have, and a contact email.
+          I'll take it from there and build everything tailored to you — no technical knowledge needed on your side.
+        </p>
+      </div>
+      
+      <div class="email">Reach out at: sarvesh@gmail.com</div>
+      
+    </div>
+
+  </div>
+
+</main>
+ 
+<footer>
+    © 2026 NeuraCare. All rights reserved.
+</footer>
+
+
+
+</body>
+</html>

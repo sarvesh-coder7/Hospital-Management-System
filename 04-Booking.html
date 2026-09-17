@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Book Appointment - NeuraCare</title>
+<link rel="icon" href="../Assets/Images/CMS Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green-900: #14532d;
+    --green-800: #166534;
+    --green-700: #15803d;
+    --green-600: #16a34a;
+    --green-500: #22c55e;
+    --green-100: #dcfce7;
+    --green-50:  #f0fdf4;
+    --teal:      #0f766e;
+    --teal-light:#ccfbf1;
+    --gray-900:  #111827;
+    --gray-800:  #1f2937;
+    --gray-700:  #374151;
+    --gray-500:  #6b7280;
+    --gray-300:  #d1d5db;
+    --gray-200:  #e5e7eb;
+    --gray-100:  #f3f4f6;
+    --gray-50:   #f9fafb;
+    --white:     #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+    --shadow-lg: 0 8px 28px rgba(0,0,0,.15);
+    --radius:    10px;
+
+    /* Key layout sizes */
+    --sb-collapsed: 56px;   /* icon-only width */
+    --sb-expanded:  230px;  /* hover-open width */
+    --filter-w:     248px;
+    --topbar-h:     62px;
+  }
+  body { 
+    font-family: 'Inter', sans-serif; 
+    background: var(--gray-50); 
+    color: var(--gray-900); 
+  }
+  a { 
+    text-decoration: none; 
+    color: inherit; 
+  }
+  button { 
+    cursor: pointer; 
+    border: none; 
+    background: none; 
+    font-family: inherit; 
+  }
+  input, select { font-family: inherit; }
+
+  /* ══════════════════════════════════════════
+     TOP BAR
+  ══════════════════════════════════════════ */
+
+  .topbar {
+    position: fixed; 
+    top: 0; 
+    left: var(--sb-collapsed); 
+    right: 0; 
+    height: var(--topbar-h);
+    background: var(--white); 
+    border-bottom: 1px solid var(--gray-200);
+    display: flex; 
+    align-items: center; 
+    gap: 0; 
+    padding: 0 20px;
+    z-index: 300; 
+    box-shadow: var(--shadow-sm);
+  }
+
+  .logo-img-wrap {
+    width: 34px; 
+    height: 34px; 
+    flex-shrink: 0;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+  }
+
+  .logo-img { 
+    width: 34px; 
+    height: 34px; 
+    object-fit: contain; 
+    border-radius: 8px; 
+    display: block; 
+  }
+
+  .logo-box {
+    width: 34px; 
+    height: 34px; 
+    background: var(--green-700);
+    border-radius: 8px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .logo-box svg { 
+    width: 19px; 
+    height: 19px; 
+    fill: white; 
+  }
+
+  /* Controls zone: location + search live here, grouped together */
+
+  .topbar__controls { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    min-width: 0; 
+    flex: 1 1 auto; 
+  }
+
+  .topbar__location {
+    display: flex; align-items: center; gap: 7px;
+    border: 1.5px solid var(--gray-200); border-radius: 9px;
+    padding: 7px 12px; font-size: 13px; color: var(--gray-700);
+    cursor: pointer; white-space: nowrap; background: white; flex-shrink: 0;
+    transition: border-color .15s, background .15s;
+  }
+  .topbar__location:hover { border-color: var(--green-600); background: var(--green-50); }
+  .topbar__location svg { width: 15px; height: 15px; color: var(--green-700); flex-shrink:0; }
+  .loc-label { font-size: 10.5px; color: var(--gray-500); display: block; line-height: 1; }
+  .loc-value { font-weight: 600; font-size: 13px; color: var(--gray-800); }
+
+  .topbar__search {
+  flex: 1 1 auto; width: auto; min-width: 180px;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--gray-100); border: 1.5px solid var(--gray-200);
+  border-radius: 9px; padding: 0 14px; height: 40px;
+  transition: border-color .15s;
+}
+  /* Spacer pushes the profile avatar to the far right regardless of controls width */
+  .topbar__spacer { flex: 1 1 auto; }
+  .topbar__search:focus-within { border-color: var(--green-600); background: white; }
+  .topbar__search svg { width: 16px; height: 16px; color: var(--gray-500); flex-shrink: 0; }
+  .topbar__search input {
+    flex: 1; background: none; border: none; outline: none;
+    font-size: 14px; color: var(--gray-800);
+  }
+  .topbar__search input::placeholder { color: var(--gray-500); }
+
+  .topbar__profile {
+    width: 37px; height: 37px; border-radius: 50%;
+    background: var(--green-800); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    border: 2.5px solid var(--green-100); flex-shrink: 0;
+  }
+
+  /* ── LOCATION MODAL (Apollo 247 style) ── */
+  .loc-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease;
+  }
+  .loc-modal-overlay.open {
+    opacity: 1; pointer-events: all;
+  }
+  .loc-modal {
+    background: white; border-radius: 14px;
+    width: 100%; max-width: 480px;
+    padding: 28px 28px 24px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,.22);
+    transform: translateY(-12px);
+    transition: transform .22s ease;
+  }
+  .loc-modal-overlay.open .loc-modal {
+    transform: translateY(0);
+  }
+
+  .loc-modal__close {
+    position: absolute; top: 14px; right: 14px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--gray-100); color: var(--gray-700);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .loc-modal__close:hover { background: var(--gray-200); color: var(--gray-900); }
+
+  .loc-modal__title {
+    font-size: 15px; font-weight: 800; color: var(--green-800);
+    text-align: center; letter-spacing: .08em;
+    margin-bottom: 20px;
+  }
+
+  .loc-modal__search {
+    display: flex; align-items: center; gap: 10px;
+    border: 1.5px solid var(--gray-300); border-radius: 9px;
+    padding: 10px 14px; background: white;
+    transition: border-color .15s;
+  }
+  .loc-modal__search:focus-within { border-color: var(--green-600); }
+  .loc-modal__search svg { color: var(--gray-500); flex-shrink: 0; }
+  .loc-modal__search input {
+    flex: 1; border: none; outline: none;
+    font-size: 14px; color: var(--gray-800);
+  }
+  .loc-modal__search input::placeholder { color: var(--gray-400, #9ca3af); }
+
+  .loc-modal__current {
+    display: flex; align-items: center; gap: 7px;
+    color: var(--green-700); font-size: 13.5px; font-weight: 600;
+    margin-top: 14px; cursor: pointer; padding: 2px 0;
+  }
+  .loc-modal__current:hover { text-decoration: underline; }
+  .loc-modal__current svg { flex-shrink: 0; }
+
+  .loc-modal__divider {
+    height: 1px; background: var(--gray-100); margin: 14px 0 6px;
+  }
+
+  .loc-modal__list { max-height: 260px; overflow-y: auto; }
+  .loc-modal__list::-webkit-scrollbar { width: 4px; }
+  .loc-modal__list::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+
+  .loc-modal__option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 6px; font-size: 14px; color: var(--gray-700);
+    cursor: pointer; border-radius: 7px;
+    transition: background .12s, color .12s;
+  }
+  .loc-modal__option:hover { background: var(--green-50); color: var(--green-800); }
+  .loc-modal__option svg { color: var(--gray-400, #9ca3af); flex-shrink: 0; }
+  .loc-modal__option:hover svg { color: var(--green-600); }
+
+  .loc-modal__empty {
+    text-align: center; padding: 20px 0;
+    font-size: 13px; color: var(--gray-400, #9ca3af);
+  }
+
+  /* ══════════════════════════════════════════
+     MAIN SIDEBAR — hover-to-expand (MongoDB Atlas style)
+
+     Always starts COLLAPSED (icon-only = 56px), full viewport
+     height (top:0), so it owns the entire top-left corner
+     including the logo. On :hover → expands to 220px, the
+     logo wordmark + nav labels fade in, and the sidebar
+     visually overlays the topbar's left edge — exactly like
+     MongoDB Atlas. The filter sidebar is NOT pushed — it
+     stays fixed at left:56px always.
+  ══════════════════════════════════════════ */
+  .sidebar-main {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: var(--sb-collapsed);           /* always starts collapsed */
+    background: #0F3D22;
+    display: flex; flex-direction: column;
+    /* smooth expand on hover */
+    transition: width .22s cubic-bezier(.4,0,.2,1),
+                box-shadow .22s ease;
+    z-index: 320;                         /* above the topbar (300) */
+    overflow: hidden;
+  }
+
+/* Only push the content on hover when on the Specialties (home) view.
+   On the Doctors view, .main has the filter-open class, which this
+   rule now skips — so it keeps the overlap behavior there instead. */
+.sidebar-main:hover ~ .main:not(.filter-open) {
+  margin-left: var(--sb-expanded);
+}
+
+.sidebar-main.compact:hover ~ .main:not(.filter-open) {
+  margin-left: 200px;
+}
+
+  /* Hover → expand, cast a subtle shadow to separate from content */
+  .sidebar-main:hover {
+    width: var(--sb-expanded);
+    box-shadow: 4px 0 20px rgba(0,0,0,.18);
+  }
+
+  /* Smaller hover-expand width, only on the Home/Specialties page */
+  .sidebar-main.compact:hover {
+    width: 200px;   /* ← adjust this number to taste */
+  }
+
+  /* Logo header row — lives INSIDE the sidebar so it collapses/expands
+     together with the nav icons below it (MongoDB Atlas pattern) */
+  .sidebar-logo {
+    height: var(--topbar-h);
+    display: flex; align-items: center;
+    background: background: #0F3D22;
+    flex-shrink: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .sidebar-logo-icon {
+    width: var(--sb-collapsed);   /* keeps icon centred when collapsed, like nav-icon */
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-logo-text {
+    font-family: 'Merriweather', serif; font-size: 16px; font-weight: 700;
+    color: white;
+    opacity: 0; transform: translateX(-4px);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .sidebar-logo-text span { color: var(--green-100); }
+  .sidebar-main:hover .sidebar-logo-text { opacity: 1; transform: translateX(0); }
+
+  /* Nav items */
+  .nav-list { padding: 8px 0; flex: 1; overflow-y: auto; overflow-x: hidden; }
+  .nav-list::-webkit-scrollbar { width: 3px; }
+  .nav-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
+
+  .nav-item {
+    display: flex; align-items: center;
+    padding: 11px 0; cursor: pointer;
+    color: rgba(255,255,255,.72); font-size: 13.5px; font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: background .15s, color .15s, border-color .15s;
+    white-space: nowrap; overflow: hidden; user-select: none;
+  }
+  .nav-item:hover { background: rgba(255,255,255,.1); color: white; }
+  .nav-item.active {
+    background: rgba(255,255,255,.15); color: white;
+    border-left-color: var(--green-500);
+  }
+  /* Icon wrapper — fixed width so icon stays centred when collapsed */
+  .nav-icon {
+    width: var(--sb-collapsed); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-icon svg { width: 18px; height: 18px; }
+  /* Label — hidden when collapsed */
+  .nav-label {
+    opacity: 0; transform: translateX(-4px);
+    transition: opacity .18s ease, transform .18s ease;
+    pointer-events: none;
+  }
+  .sidebar-main:hover .nav-label {
+    opacity: 1; transform: translateX(0);
+  }
+
+  /* Tooltip on collapsed icons (shows nav name on hover when sidebar is narrow) */
+  .nav-item { position: relative; }
+  .nav-item .tooltip {
+    position: absolute; left: calc(var(--sb-collapsed) + 8px); top: 50%;
+    transform: translateY(-50%);
+    background: var(--gray-800); color: white;
+    font-size: 12px; font-weight: 600; padding: 5px 10px;
+    border-radius: 6px; white-space: nowrap;
+    pointer-events: none;
+    opacity: 0; transition: opacity .12s;
+    z-index: 500;
+    box-shadow: var(--shadow-md);
+  }
+  /* Show tooltip ONLY when sidebar is not hovered (i.e. still narrow) */
+  .sidebar-main:not(:hover) .nav-item:hover .tooltip { opacity: 1; }
+
+  /* ══════════════════════════════════════════
+     FILTER SIDEBAR — always at left:56px (collapsed icon width)
+     Opens/closes independently of main sidebar.
+  ══════════════════════════════════════════ */
+  .sidebar-filter {
+    position: fixed; top: var(--topbar-h); bottom: 0;
+    left: var(--sb-collapsed);          /* always anchored to collapsed width */
+    width: var(--filter-w);
+    background: var(--white); border-right: 1px solid var(--gray-200);
+    overflow-y: auto; z-index: 200;
+    transition: transform .25s cubic-bezier(.4,0,.2,1);
+    transform: translateX(-110%);       /* hidden by default */
+  }
+  .sidebar-filter.open { transform: translateX(0); }
+  .sidebar-filter::-webkit-scrollbar { width: 4px; }
+  .sidebar-filter::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+
+  .filter-head {
+    padding: 16px 16px 12px; border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: white; z-index: 2;
+  }
+  .filter-head h3 { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+  .filter-clear-btn {
+    font-size: 12.5px; color: var(--green-700); font-weight: 600;
+    cursor: pointer; padding: 3px 6px; border-radius: 5px;
+  }
+  .filter-clear-btn:hover { background: var(--green-50); }
+
+  /* ── NEARBY BUTTON (Apollo style: outlined, full-width) ── */
+  .nearby-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    margin: 14px 16px 4px;
+    padding: 9px 14px;
+    border: 1.5px solid var(--gray-300); border-radius: 8px;
+    color: var(--gray-700); font-size: 13px; font-weight: 500;
+    background: white; width: calc(100% - 32px);
+    transition: border-color .15s, color .15s;
+  }
+  .nearby-btn:hover { border-color: var(--green-600); color: var(--green-700); }
+  .nearby-btn svg { width: 14px; height: 14px; }
+
+  /* ── FILTER GROUP — Apollo 247 style ── */
+  .fgroup { border-bottom: 1px solid var(--gray-100); padding: 14px 16px 12px; }
+
+  /* Section title: plain bold text, no uppercase, no background */
+  .fgroup-title {
+    font-size: 14px; font-weight: 700; color: var(--gray-900);
+    margin-bottom: 10px; display: flex; align-items: center;
+    justify-content: space-between;
+  }
+  /* Optional search icon beside section title (like Apollo's Language search) */
+  .fgroup-title svg { width: 15px; height: 15px; color: var(--gray-400, #9ca3af); cursor: pointer; }
+  .fgroup-title svg:hover { color: var(--green-700); }
+
+  /* Checkbox row */
+  .fcheck {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 0; cursor: pointer; font-size: 13.5px; color: var(--gray-700);
+    line-height: 1.3;
+  }
+  .fcheck input[type="checkbox"] {
+    width: 16px; height: 16px; flex-shrink: 0;
+    accent-color: var(--green-700); cursor: pointer;
+    border-radius: 3px;
+  }
+  .fcheck:hover { color: var(--gray-900); }
+  .fcheck input:checked + span { color: var(--gray-900); font-weight: 500; }
+
+  /* "+N More" expand link — Apollo style teal/green link */
+  .show-more-link {
+    display: inline-block; margin-top: 6px;
+    font-size: 13px; font-weight: 600;
+    color: var(--green-700); cursor: pointer;
+  }
+  .show-more-link:hover { text-decoration: underline; }
+
+  /* Mode of Consult uses checkboxes (not toggle buttons) — Apollo style */
+  .fcheck-blue input[type="checkbox"] { accent-color: #1570ef; }
+  .fcheck-blue { color: var(--gray-700); }
+
+  /* Experience sub-items hidden beyond limit */
+  .fcheck.hidden { display: none; }
+  .fcheck.hidden.revealed { display: flex; }
+
+  /* ══════════════════════════════════════════
+     MAIN CONTENT
+     margin-left = sb-collapsed (56px) always,
+     plus filter width when filter is open.
+     Main sidebar overlays when hovered — no layout shift.
+  ══════════════════════════════════════════ */
+  .main {
+    margin-top: var(--topbar-h);
+    margin-left: var(--sb-collapsed);   /* base: only icon sidebar */
+    min-height: calc(100vh - var(--topbar-h));
+    padding: 28px 26px;
+    transition: margin-left .25s cubic-bezier(.4,0,.2,1);
+  }
+  .main.filter-open {
+    margin-left: calc(var(--sb-collapsed) + var(--filter-w));
+  }
+
+  /* ══════════════════════════════════════════
+     HOME — specialties & find steps
+  ══════════════════════════════════════════ */
+  .section-title {
+    font-family: 'Merriweather', serif;
+    font-size: 20px; font-weight: 700; color: var(--gray-900); margin-bottom: 18px;
+  }
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 13px; margin-bottom: 34px;
+  }
+  .spec-card {
+    background: white; 
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius); 
+    padding: 15px 13px;
+    display: flex; 
+    align-items: center; 
+    gap: 11px;
+    cursor: pointer; 
+    transition: border-color .18s, box-shadow .18s, transform .15s;
+    min-height:74px;
+  }
+  .spec-card:hover {
+    border-color: var(--green-600); 
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .spec-icon {
+    width: 44px; 
+    height: 44px; 
+    border-radius: 12px;
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    flex-shrink: 0;
+  }
+  .spec-icon svg { 
+    width: 25px; 
+    height: 25px; 
+    display: block; 
+  }
+  .spec-name { 
+    font-size: 12.5px; 
+    font-weight: 600; 
+    color: var(--gray-800); 
+    line-height: 1.3; 
+
+    flex:1;
+    min-width:0;
+    word-break:break-word;
+    overflow-wrap:break-word;
+  }
+
+  .find-steps {
+    background: white; border: 1.5px solid var(--gray-200);
+    border-radius: 14px; padding: 26px 24px;
+    box-shadow: var(--shadow-sm); margin-bottom: 10px;
+  }
+  .find-steps h2 {
+    font-family: 'Merriweather', serif;
+    font-size: 17px; font-weight: 700; margin-bottom: 18px; color: var(--gray-900);
+  }
+  .steps-row { display: flex; gap: 13px; flex-wrap: wrap; align-items: flex-end; }
+  .step-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 155px; }
+  .step-field label {
+    font-size: 11px; font-weight: 700; color: var(--gray-500);
+    letter-spacing: .05em; text-transform: uppercase;
+  }
+  .step-field select,
+  .step-field input {
+    border: 1.5px solid var(--gray-300); border-radius: 8px;
+    padding: 10px 12px; font-size: 13.5px; color: var(--gray-800);
+    outline: none; background: white; height: 42px;
+  }
+  .step-field select:focus,
+  .step-field input:focus { border-color: var(--green-600); }
+  .step-submit {
+    padding: 0 28px; background: var(--green-800); color: white;
+    border-radius: 8px; font-size: 14px; font-weight: 700; height: 42px;
+    transition: background .15s; white-space: nowrap;
+  }
+  .step-submit:hover { background: var(--green-700); }
+
+  /* ══════════════════════════════════════════
+     DOCTOR LISTING
+  ══════════════════════════════════════════ */
+  .breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--gray-500); margin-bottom: 16px;
+  }
+  .breadcrumb a { color: var(--green-700); cursor: pointer; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb svg { width: 12px; height: 12px; }
+
+  .doc-list-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+  }
+  .doc-list-top h1 {
+    font-family: 'Merriweather', serif;
+    font-size: 20px; font-weight: 700; color: var(--gray-900);
+  }
+  .doc-list-top p { font-size: 13px; color: var(--gray-500); margin-top: 3px; }
+  .sort-wrap {
+    display: flex; align-items: center; gap: 8px;
+    border: 1.5px solid var(--gray-300); border-radius: 8px;
+    padding: 8px 14px; background: white; font-size: 13px;
+  }
+  .sort-wrap svg { width: 14px; height: 14px; color: var(--gray-500); }
+  .sort-wrap select { border: none; outline: none; font-size: 13px; cursor: pointer; color: var(--gray-700); }
+
+  /* Doctor card */
+  .doc-grid { display: flex; flex-direction: column; gap: 15px; }
+
+  .doc-card {
+    background: white; border: 1.5px solid var(--gray-200);
+    border-radius: 14px; padding: 20px 22px;
+    display: flex; gap: 20px; align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow .2s, border-color .2s;
+    position: relative; overflow: hidden;
+    animation: fadeUp .35s ease both;
+  }
+  .doc-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: linear-gradient(180deg, var(--green-600), var(--teal));
+    border-radius: 14px 0 0 14px;
+  }
+  .doc-card:hover { box-shadow: var(--shadow-lg); border-color: #86efac; }
+
+  .card-left { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 7px; 
+    flex-shrink: 0;
+    min-height:170px;
+
+  }
+  .doc-avatar {
+    width: 100px; 
+    height: 100px; 
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-100), var(--green-50));
+    border: 3px solid var(--green-100);
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-size: 30px; 
+    font-weight: 800; 
+    color: var(--green-800);
+    position: relative;
+    top: 8.5px;
+  }
+  .verified-pill{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#dcfce7;
+    color:#166534;
+    border-radius:6px;
+    padding:4px 8px;
+    font-size:10px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.verified-pill svg{
+    width:14px;
+    height:14px;
+    background:#16a34a;
+    color:white;
+    border-radius:50%;
+    padding:2px;
+    flex-shrink:0;
+}
+  /* Row of small tags directly under the avatar: NeuraCare brand tag + Verified tag */
+.card-tags { 
+  display: flex; flex-direction: column; align-items: center; gap: 5px; margin-top:auto;} 
+ .brand-pill {
+    display: flex; align-items: center; gap: 3px;
+    background: var(--green-900); color: white;
+    border-radius: 6px; padding: 3px 7px;
+    font-size: 9.5px; font-weight: 700; white-space: nowrap;
+  }
+  .brand-pill svg { width: 10px; height: 10px; fill: white; }
+  .brand-pill-icon { width: 11px; height: 11px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .brand-pill-icon img { width: 11px; height: 11px; object-fit: contain; display: block; border-radius: 2px; }
+  .brand-pill-icon svg { width: 11px; height: 11px; fill: white; }
+
+  .card-body { flex: 1; min-width: 0; }
+  .card-top-row {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 12px; flex-wrap: wrap;
+  }
+  .doc-name { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+  .doc-spec { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+  .on-time-badge {
+    background: var(--green-800); color: white; border-radius: 6px;
+    padding: 4px 10px; font-size: 10px; font-weight: 700;
+    letter-spacing: .04em; white-space: nowrap; flex-shrink: 0;
+  }
+  .doc-qual {
+    font-size: 12px; font-weight: 700; color: var(--green-800);
+    letter-spacing: .04em; margin: 9px 0 4px;
+  }
+  .doc-meta {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    font-size: 12.5px; color: #4b5563; margin-bottom: 2px;
+  }
+  .doc-meta span { display: flex; align-items: center; gap: 5px; }
+  .doc-meta svg { width: 13px; height: 13px; color: var(--green-600); flex-shrink: 0; }
+
+  .card-footer {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-top: 14px; flex-wrap: wrap; gap: 12px;
+  }
+  .rating-row { display: flex; flex-direction: column; gap: 5px; }
+  .rating-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green-100); color: var(--green-800);
+    border-radius: 20px; padding: 4px 10px;
+    font-size: 12px; font-weight: 700;
+  }
+  .avail-row { display: flex; align-items: center; gap: 5px; }
+  .avail-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-500); flex-shrink: 0; }
+  .avail-text { font-size: 12px; color: var(--green-700); font-weight: 600; }
+
+  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .doc-fee { font-size: 20px; font-weight: 800; color: var(--gray-900); }
+  .doc-fee span { font-size: 12px; font-weight: 400; color: var(--gray-500); }
+  .card-actions { display: flex; gap: 9px; }
+  .btn-profile {
+    padding: 9px 16px; border: 1.5px solid var(--green-700);
+    color: var(--green-700); border-radius: 8px; font-size: 13px;
+    font-weight: 600; background: white; transition: background .15s;
+  }
+  .btn-profile:hover { background: var(--green-50); }
+  .btn-book {
+    padding: 9px 20px; background: var(--green-800);
+    color: white; border-radius: 8px; font-size: 13px; font-weight: 700;
+    transition: background .15s, transform .1s;
+  }
+  .btn-book:hover { background: var(--green-700); transform: translateY(-1px); }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--gray-500); }
+  .empty-state .emoji { font-size: 48px; margin-bottom: 14px; }
+  .empty-state h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--gray-700); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     TOP BAR (logo lives in the sidebar now — see below)
+══════════════════════════════════════════ -->
+<header class="topbar">
+  <!-- Location + Search grouped together -->
+  <div class="topbar__controls">
+    <div class="topbar__location" id="locBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+        <circle cx="12" cy="9" r="2.5"/>
+      </svg>
+      <div>
+        <span class="loc-label">Select Location</span>
+        <span class="loc-value" id="locValue">Select Address ▾</span>
+      </div>
+    </div>
+
+    <div class="topbar__search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="globalSearch" placeholder="Search Doctors, Specialities, Conditions etc."/>
+    </div>
+  </div>
+
+  <div class="topbar__spacer"></div>
+
+  <div class="topbar__profile"
+     title="My Profile"
+     onclick="window.location.href='05-Patient-dashboard.html'">
+  P
+</div>
+</header>
+
+<!-- Location Modal (Apollo 247 style) -->
+<div class="loc-modal-overlay" id="locOverlay" onclick="closeLocModal(event)">
+  <div class="loc-modal" id="locModal">
+    <button class="loc-modal__close" onclick="closeLocModalDirect()" title="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <h2 class="loc-modal__title">SELECT LOCATION</h2>
+    <div class="loc-modal__search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="locModalInput" placeholder="Search for street name, pincode." oninput="filterLocOptions(this.value)"/>
+    </div>
+    <div class="loc-modal__current" onclick="useCurrentLocation()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+      </svg>
+      Use Current Location
+    </div>
+    <div class="loc-modal__divider"></div>
+    <div class="loc-modal__list" id="locOptionsList">
+      <div class="loc-modal__option" onclick="setLocation('Chennai, Tamil Nadu')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Chennai, Tamil Nadu
+      </div>
+      <div class="loc-modal__option" onclick="setLocation('Bangalore, Karnataka')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Bangalore, Karnataka
+      </div>
+      <div class="loc-modal__option" onclick="setLocation('Mumbai, Maharashtra')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Mumbai, Maharashtra
+      </div>
+      <div class="loc-modal__option" onclick="setLocation('Delhi, NCR')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Delhi, NCR
+      </div>
+      <div class="loc-modal__option" onclick="setLocation('Hyderabad, Telangana')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Coimbatore, Tamil Nadu
+      </div>
+      <div class="loc-modal__option" onclick="setLocation('Pune, Maharashtra')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Pune, Maharashtra
+      </div>
+      <div class="loc-modal__option" onclick="setLocation('Kolkata, West Bengal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Kolkata, West Bengal
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     MAIN SIDEBAR  (hover-to-expand, MongoDB Atlas style)
+     — Default: 56px wide, icons only, logo row on top
+     — On hover: expands to 220px, logo text + nav labels appear
+     — No click needed, no button needed
+══════════════════════════════════════════ -->
+<aside class="sidebar-main" id="sidebarMain">
+
+  <!-- Logo header — collapses & expands together with the sidebar -->
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">
+      <span class="logo-img-wrap">
+        <img src="../Assets/Images/CMS Logo.png" alt="NeuraCare" class="logo-img"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"/>
+        <span class="logo-box" style="display:none">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/></svg>
+        </span>
+      </span>
+    </div>
+    <span class="sidebar-logo-text">Neura<span>Care</span></span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav-list">
+
+    <div class="nav-item active" data-nav="home" onclick="navClick(this,'home')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+          <path d="M9 21V12h6v9"/>
+        </svg>
+      </div>
+      <span class="nav-label">Specialty Hub</span>
+      <span class="tooltip">Specialty Hub</span>
+    </div>
+
+    <div class="nav-item" data-nav="doctors" onclick="navClick(this,'doctors')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+          <line x1="12" y1="14" x2="12" y2="18"/>
+          <line x1="10" y1="16" x2="14" y2="16"/>
+        </svg>
+      </div>
+      <span class="nav-label">Doctors</span>
+      <span class="tooltip">Doctors</span>
+    </div>
+
+    <div class="nav-item" data-nav="appointments" onclick="navClick(this,'appointments')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+          <polyline points="9 16 11 18 15 14"/>
+        </svg>
+      </div>
+      <span class="nav-label">Appointments</span>
+      <span class="tooltip">Appointments</span>
+    </div>
+
+    <div class="nav-item" data-nav="records" onclick="navClick(this,'records')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="9" y1="13" x2="15" y2="13"/>
+          <line x1="9" y1="17" x2="13" y2="17"/>
+        </svg>
+      </div>
+      <span class="nav-label">Records</span>
+      <span class="tooltip">Records</span>
+    </div>
+
+    <div class="nav-item" data-nav="pharmacy" onclick="navClick(this,'pharmacy')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/>
+          <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+      </div>
+      <span class="nav-label">Pharmacy</span>
+      <span class="tooltip">Pharmacy</span>
+    </div>
+
+    <div class="nav-item" data-nav="profile" onclick="navClick(this,'profile')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <span class="nav-label">Profile</span>
+      <span class="tooltip">Profile</span>
+    </div>
+
+    <div class="nav-item" data-nav="contact" onclick="navClick(this,'contact')">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1 19.79 19.79 0 0 1 1.61 4.54 2 2 0 0 1 3.58 2.34h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.63-1.63a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+      </div>
+      <span class="nav-label">Contact</span>
+      <span class="tooltip">Contact</span>
+    </div>
+
+  </nav>
+</aside>
+
+
+<!-- ══════════════════════════════════════════
+     FILTER SIDEBAR  (Apollo 247 style)
+══════════════════════════════════════════ -->
+<aside class="sidebar-filter" id="sidebarFilter">
+
+  <!-- Header row: "Filters" + "Clear All" link — exactly like Apollo -->
+  <div class="filter-head">
+    <h3>Filters</h3>
+    <span class="filter-clear-btn" onclick="clearAllFilters()">Clear All</span>
+  </div>
+
+  <!-- Show Doctors Near Me — outlined, subtle -->
+  <button class="nearby-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+    </svg>
+    Show Doctors Near Me
+  </button>
+
+  <!-- Mode of Consult — checkboxes like Apollo (Hospital Visit / Online Consult) -->
+  <div class="fgroup">
+    <div class="fgroup-title">Mode of Consult</div>
+    <label class="fcheck fcheck-blue">
+      <input type="checkbox" data-f="mode" value="offline" onchange="applyFilters()" checked>
+      <span>Hospital Visit</span>
+    </label>
+    <label class="fcheck fcheck-blue">
+      <input type="checkbox" data-f="mode" value="online" onchange="applyFilters()" checked>
+      <span>Online Consult</span>
+    </label>
+  </div>
+
+  <!-- Experience (In Years) — 3 visible + "+1 More" link -->
+  <div class="fgroup">
+    <div class="fgroup-title">Experience (In Years)</div>
+    <label class="fcheck"><input type="checkbox" data-f="exp" value="0-5" onchange="applyFilters()"><span>0–5</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="exp" value="5-10" onchange="applyFilters()"><span>6–10</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="exp" value="10-16" onchange="applyFilters()"><span>11–16</span></label>
+    <label class="fcheck hidden" id="exp-more-1"><input type="checkbox" data-f="exp" value="10+" onchange="applyFilters()"><span>16+</span></label>
+    <span class="show-more-link" onclick="revealMore('exp-more', this)">+1 More</span>
+  </div>
+
+  <!-- Fees (In Rupees) -->
+  <div class="fgroup">
+    <div class="fgroup-title">Fees (In Rupees)</div>
+    <label class="fcheck"><input type="checkbox" data-f="fee" value="100-500" onchange="applyFilters()"><span>100–500</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="fee" value="500-1000" onchange="applyFilters()"><span>500–1000</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="fee" value="1000+" onchange="applyFilters()"><span>1000+</span></label>
+  </div>
+
+  <!-- Gender -->
+  <div class="fgroup">
+    <div class="fgroup-title">Gender</div>
+    <label class="fcheck"><input type="checkbox" data-f="gender" value="Male" onchange="applyFilters()"><span>Male</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="gender" value="Female" onchange="applyFilters()"><span>Female</span></label>
+  </div>
+
+  <!-- Language — with search icon like Apollo -->
+  <div class="fgroup">
+    <div class="fgroup-title">
+      Language
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" title="Search language">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </div>
+    <label class="fcheck"><input type="checkbox" data-f="lang" value="English" onchange="applyFilters()"><span>English</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="lang" value="Hindi" onchange="applyFilters()"><span>Hindi</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="lang" value="Tamil" onchange="applyFilters()"><span>Tamil</span></label>
+    <label class="fcheck hidden" id="lang-more-1"><input type="checkbox" data-f="lang" value="Telugu" onchange="applyFilters()"><span>Telugu</span></label>
+    <label class="fcheck hidden" id="lang-more-2"><input type="checkbox" data-f="lang" value="Malayalam" onchange="applyFilters()"><span>Malayalam</span></label>
+    <label class="fcheck hidden" id="lang-more-3"><input type="checkbox" data-f="lang" value="Kannada" onchange="applyFilters()"><span>Kannada</span></label>
+    <label class="fcheck hidden" id="lang-more-4"><input type="checkbox" data-f="lang" value="Bengali" onchange="applyFilters()"><span>Bengali</span></label>
+    <label class="fcheck hidden" id="lang-more-5"><input type="checkbox" data-f="lang" value="Marathi" onchange="applyFilters()"><span>Marathi</span></label>
+    <label class="fcheck hidden" id="lang-more-6"><input type="checkbox" data-f="lang" value="Gujarati" onchange="applyFilters()"><span>Gujarati</span></label>
+    <label class="fcheck hidden" id="lang-more-7"><input type="checkbox" data-f="lang" value="Punjabi" onchange="applyFilters()"><span>Punjabi</span></label>
+    <span class="show-more-link" onclick="revealMore('lang-more', this)">+10 More</span>
+  </div>
+
+  <!-- Availability -->
+  <div class="fgroup" style="border-bottom:none">
+    <div class="fgroup-title">Availability</div>
+    <label class="fcheck"><input type="checkbox" data-f="avail" value="Today" onchange="applyFilters()"><span>Today</span></label>
+    <label class="fcheck"><input type="checkbox" data-f="avail" value="Tomorrow" onchange="applyFilters()"><span>Tomorrow</span></label>
+  </div>
+
+</aside>
+
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════ -->
+<main class="main" id="mainContent">
+
+  <!-- HOME VIEW -->
+  <div id="view-home">
+    <p class="section-title">Browse by Specialties</p>
+    <div class="spec-grid" id="specGrid"></div>
+
+    <div class="find-steps">
+      <h2>Find a Doctor in 3 Easy Steps</h2>
+      <div class="steps-row">
+        <div class="step-field">
+          <label>Select Speciality *</label>
+          <select id="stepSpec">
+            <option value="">Enter Speciality</option>
+            <option>General Physician</option>
+            <option>Cardiologist</option>
+            <option>Neurologist</option>
+            <option>Dermatologist</option>
+            <option>Orthopedic</option>
+            <option>Pediatrician</option>
+            <option>ENT</option>
+            <option>Dentist</option>
+          </select>
+        </div>
+        <div class="step-field">
+          <label>Select Date *</label>
+          <input type="date" id="stepDate"/>
+        </div>
+        <div class="step-field">
+          <label>Preferred Location / Pincode *</label>
+          <input type="text" placeholder="Search location"/>
+        </div>
+        <button class="step-submit" onclick="submitFind()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCTORS VIEW -->
+  <div id="view-doctors" style="display:none">
+    <div class="breadcrumb">
+      <a href="05-Patient-dashboard.html">Home</a>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <a onclick="goHome()">Specialities</a>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      <span id="bcSpec">Doctors</span>
+    </div>
+    <div class="doc-list-top">
+      <div>
+        <h1 id="docTitle">Find a Doctor</h1>
+        <p id="docCount">Loading…</p>
+      </div>
+      <div class="sort-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+          <circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/>
+        </svg>
+        <select onchange="sortDoctors(this.value)">
+          <option value="relevance">Relevance</option>
+          <option value="fee-asc">Fee: Low → High</option>
+          <option value="fee-desc">Fee: High → Low</option>
+          <option value="exp">Experience</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+    </div>
+    <div class="doc-grid" id="docGrid"></div>
+  </div>
+
+</main>
+
+
+<script>
+/* ─── DATA ───────────────────────────────────────── */
+const SPECIALTIES = [
+  {name:'General Physician'},{name:'Dermatology'},
+  {name:'Obstetrics & Gynae'},{name:'Orthopaedics'},
+  {name:'ENT'},{name:'Neurology'},
+  {name:'Cardiology'},{name:'Urology'},
+  {name:'Gastroenterology'},{name:'Psychiatry'},
+  {name:'Paediatrics'},{name:'Pulmonology'},
+  {name:'Endocrinology'},{name:'Nephrology'},
+  {name:'Neurosurgery'},{name:'Rheumatology'},
+  {name:'Ophthalmology'},{name:'Surgical Gastro'},
+  {name:'Infectious Disease'},{name:'Psychology'},
+  {name:'Medical Oncology'},{name:'Diabetology'},
+  {name:'Dentist'},{name:'General & Laparo'},
+];
+
+const SPEC_PALETTE = [
+  {bg:'#dcfce7', accent:'#15803d'},
+  {bg:'#fef3c7', accent:'#b45309'},
+  {bg:'#fee2e2', accent:'#b91c1c'},
+  {bg:'#e0e7ff', accent:'#4338ca'},
+  {bg:'#fce7f3', accent:'#be185d'},
+  {bg:'#cffafe', accent:'#0e7490'},
+  {bg:'#ede9fe', accent:'#6d28d9'},
+  {bg:'#fef9c3', accent:'#854d0e'},
+];
+
+const SPEC_ICONS = {
+  'General Physician': `<circle cx="20" cy="13" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 33c0-6 4.5-10 10-10s10 4 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M14 20v3a6 6 0 0012 0v-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".55"/><circle cx="28" cy="25" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/>`,
+  'Dermatology': `<circle cx="18" cy="20" r="9" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.7"/><path d="M15.5 18.3c.3-.9.9-1.4 1.8-1.4s1.5.5 1.8 1.4M17.4 23c.9 1.1 2.1 1.7 3.5 1.7s2.6-.6 3.5-1.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M29 11l1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1 2.4-1z" fill="currentColor"/>`,
+  'Obstetrics & Gynae': `<circle cx="17" cy="13.5" r="4.3" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="1.6"/><path d="M17 17.6v9.4M13.7 22h6.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="27" cy="24" r="3" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="1.4"/>`,
+  'Orthopaedics': `<path d="M11 14a3 3 0 114.2 4.2l10.6 10.6A3 3 0 1130 33a3 3 0 01-4.2-4.2L15.2 18.2A3 3 0 0111 14z" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>`,
+  'ENT': `<path d="M22 11c-5 0-9 4-9 9 0 3 1.5 4.5 1.5 7 0 2 1.6 3.5 3.6 3.5s3-1.5 3-3.5c0-1.7 1-2 2-2 2.6 0 4.2-2 4.2-5.2 0-1.5-1-2.4-2-2.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M28 16c1.3 1 2 2.5 2 4M30.2 13c2 1.7 3 4 3 7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>`,
+  'Neurology': `<path d="M16 9c-3 0-5 2-5 4.5-2 .5-3.5 2.5-3 5-1.5 1-2 3-1 4.5-1 2 .5 4 3 4.5.5 2.5 3 4 5.5 3.5.8 1.3 2.3 2 3.7 1.7 0 0 0-15-1-19-.5-2.5-1.7-4.2-2.2-4.2z" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M24 9c3 0 5 2 5 4.5 2 .5 3.5 2.5 3 5 1.5 1 2 3 1 4.5 1 2-.5 4-3 4.5-.5 2.5-3 4-5.5 3.5-.8 1.3-2.3 2-3.7 1.7" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>`,
+  'Cardiology': `<path d="M20 32c-7-5-12-9.3-12-15A6.5 6.5 0 0120 12.5 6.5 6.5 0 0132 17c0 5.7-5 10-12 15z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 21h5l2.5-5 3 9 2.5-6h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  'Urology': `<path d="M16 12c-3.5 0-6 3.5-6 8s2.5 8.5 6 8.5c2.6 0 3.5-2 3.5-4.5 0-1.8-1.3-2.3-1.3-4S19.5 17.8 19.5 16C19.5 14.5 18.5 12 16 12z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M26.5 17c1.7 2.3 2.5 4 2.5 5.5a2.5 2.5 0 01-5 0c0-1.5.8-3.2 2.5-5.5z" fill="currentColor" fill-opacity=".2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>`,
+  'Gastroenterology': `<path d="M15 11c-2 2-3 5-2.5 8.5.5 4 3 7 7.5 7.5 4 .4 7.5-2 8-6 .3-2.5-1-4-3-4.5-2.7-.7-3-2.7-1.5-4.5" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  'Psychiatry': `<path d="M14 23c-2-1.5-3-4-2.3-6.6C12.4 13 15.7 11 19.2 11.4c3 .3 5.4 2.4 6.2 5.2.3 1 1.4 1.3 2 2.2 1 1.4.6 3.3-.8 4.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 23v3a3 3 0 003 3h6a3 3 0 003-3v-2" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="22" cy="17" r="2.6" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".6"/>`,
+  'Paediatrics': `<circle cx="20" cy="17" r="8" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="16" r="1.1" fill="currentColor"/><circle cx="23" cy="16" r="1.1" fill="currentColor"/><path d="M16.5 20c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M20 25v3M17 30a3 3 0 016 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
+  'Pulmonology': `<path d="M19 11v8c-1-2-3-3-5-3-3 0-5 3-5 7s2 8 4.5 8c2 0 3.5-1.5 4.5-3.5.5-1 1-1 1.5 0" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M21 11v8c1-2 3-3 5-3 3 0 5 3 5 7s-2 8-4.5 8c-2 0-3.5-1.5-4.5-3.5-.5-1-1-1-1.5 0" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><path d="M19 11h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`,
+  'Endocrinology': `<path d="M20 19c-1-3-4-4-6.5-2.5S11 21 13.5 23 20 22 20 19z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M20 19c1-3 4-4 6.5-2.5S29 21 26.5 23 20 22 20 19z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>`,
+  'Nephrology': `<path d="M14 13c-3 0-5 3-5 7s2 8 5 8c2.3 0 3-1.7 3-4 0-1.6-1.2-2-1.2-3.8s1.2-2.3 1.2-4S16 13 14 13z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M26 13c3 0 5 3 5 7s-2 8-5 8c-2.3 0-3-1.7-3-4 0-1.6 1.2-2 1.2-3.8S23 18.2 23 16.5 24 13 26 13z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>`,
+  'Neurosurgery': `<path d="M14 12c-3 .3-5 2.7-4.5 5.3-1.6 1-2.3 3-1.3 4.7-.7 2 .3 4.2 2.3 5 .2 2.3 2.3 4 4.7 3.7 1 1.2 2.6 1.7 4 1.3 0 0 .3-13-1-17-.7-2-2.3-3.2-4.2-3z" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M27 13v6M24 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
+  'Rheumatology': `<path d="M14 12l4 4M26 12l-4 4M14 28l4-4M26 28l-4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="20" cy="20" r="6" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="1.6"/><circle cx="20" cy="20" r="1.5" fill="currentColor"/>`,
+  'Ophthalmology': `<path d="M9 20c3-5.5 7.5-8.5 11-8.5s8 3 11 8.5c-3 5.5-7.5 8.5-11 8.5S12 25.5 9 20z" fill="currentColor" fill-opacity=".1" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="20" cy="20" r="3.6" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.5"/><circle cx="20" cy="20" r="1.1" fill="currentColor"/>`,
+  'Surgical Gastro': `<path d="M15 11c-2 2-3 5-2.5 8.5.5 4 3 7 7.5 7.5 4 .4 7.5-2 8-6 .3-2.5-1-4-3-4.5-2.7-.7-3-2.7-1.5-4.5" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M26 10l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>`,
+  'Infectious Disease': `<circle cx="20" cy="20" r="6" fill="currentColor" fill-opacity=".14" stroke="currentColor" stroke-width="1.5"/><g stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20 10v3M20 27v3M10 20h3M27 20h3M13 13l2 2M25 25l2 2M27 13l-2 2M15 25l-2 2"/></g><circle cx="20" cy="20" r="1.3" fill="currentColor"/>`,
+  'Psychology': `<path d="M13 24c-2.3-1.7-3.4-4.6-2.5-7.5 1-3.4 4.5-5.5 8-5 3.2.5 5.7 3 6.2 6.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 24v2.5a3 3 0 003 3h4a3 3 0 003-3v-1.7" fill="currentColor" fill-opacity=".12" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="27" cy="13" r="2.2" fill="currentColor" fill-opacity=".2" stroke="currentColor" stroke-width="1.2"/><circle cx="31" cy="10.5" r="1" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="1"/>`,
+  'Medical Oncology': `<path d="M17 12c2 3 2 6 0 9-2.7 4-2.7 7 1 9.3M23 12c-2 3-2 6 0 9 2.7 4 2.7 7-1 9.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="20" cy="12" r="3.3" fill="currentColor" fill-opacity=".15" stroke="currentColor" stroke-width="1.6"/>`,
+  'Diabetology': `<path d="M20 11c3 4 6 8.5 6 12a6 6 0 11-12 0c0-3.5 3-8 6-12z" fill="currentColor" fill-opacity=".15" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M17.5 25c0 1.5 1 2.5 2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".6"/>`,
+  'Dentist': `<path d="M14 13c0-2 2-3 4-2 1 .5 1.5.5 2.5 0 2-1 4 0 4 2 0 2-1 3-1 6 0 4-1 9-2.5 9-1.2 0-1-3-1.5-5-.3-1.2-1.5-1.2-1.8 0-.5 2-.3 5-1.5 5C15 28 14 23 14 19c0-3-1-4-1-6z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M25.5 14.5l5-3.3M28.5 9.2l3 2-2.5 4.2-3-2z" fill="currentColor" fill-opacity=".2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>`,
+  'General & Laparo': `<rect x="10" y="16" width="20" height="8" rx="4" transform="rotate(-25 20 20)" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="1.5"/><circle cx="16.5" cy="17.5" r="1" fill="currentColor" transform="rotate(-25 20 20)"/><circle cx="23.5" cy="22.5" r="1" fill="currentColor" transform="rotate(-25 20 20)"/>`,
+};
+
+const ALL_DOCTORS = [
+  {id:1,  name:'Dr. Priya Ramesh',      spec:'General Physician', qual:'MBBS, MD (General Medicine)',  exp:6,  expR:'5-10', fee:760,  gender:'Female', clinic:'NeuraCare Clinic – Chennai',         loc:'Chennai',    rating:92, patients:'1.2K+', avail:'Today',    ctype:'online',  verified:true,  init:'PR'},
+  {id:2,  name:'Dr. Arjun Krishnan',    spec:'Cardiologist',      qual:'MBBS, MD, DM (Cardiology)',    exp:14, expR:'10+',  fee:1200, gender:'Male',   clinic:'NeuraCare Heart Centre – Bangalore', loc:'Bangalore',  rating:97, patients:'3.8K+', avail:'Today',    ctype:'both',    verified:true,  init:'AK'},
+  {id:3,  name:'Dr. Meena Subramanian', spec:'Neurologist',       qual:'MBBS, DM (Neurology)',         exp:9,  expR:'5-10', fee:950,  gender:'Female', clinic:'NeuraCare Brain & Spine – Chennai',  loc:'Chennai',    rating:89, patients:'890+',  avail:'Tomorrow', ctype:'online',  verified:true,  init:'MS'},
+  {id:4,  name:'Dr. Rajesh Iyer',       spec:'Dermatologist',     qual:'MBBS, MD (Dermatology)',       exp:4,  expR:'0-5',  fee:499,  gender:'Male',   clinic:'NeuraCare Skin Clinic – Hyderabad',  loc:'Hyderabad',  rating:88, patients:'620+',  avail:'Today',    ctype:'offline', verified:false, init:'RI'},
+  {id:5,  name:'Dr. Kavitha Nair',      spec:'Pediatrician',      qual:'MBBS, MD (Paediatrics)',       exp:11, expR:'10+',  fee:700,  gender:'Female', clinic:'NeuraCare Child Care – Mumbai',       loc:'Mumbai',     rating:95, patients:'2.1K+', avail:'Today',    ctype:'both',    verified:true,  init:'KN'},
+  {id:6,  name:'Dr. Suresh Pandey',     spec:'Orthopedic',        qual:'MBBS, MS (Orthopaedics)',      exp:16, expR:'10+',  fee:1100, gender:'Male',   clinic:'NeuraCare Ortho Centre – Delhi',      loc:'Delhi',      rating:93, patients:'1.7K+', avail:'Tomorrow', ctype:'offline', verified:true,  init:'SP'},
+  {id:7,  name:'Dr. Ananya Das',        spec:'Dentist',           qual:'BDS, MDS (Prosthodontics)',    exp:7,  expR:'5-10', fee:550,  gender:'Female', clinic:'NeuraCare Dental – Bangalore',        loc:'Bangalore',  rating:91, patients:'940+',  avail:'Today',    ctype:'both',    verified:true,  init:'AD'},
+  {id:8,  name:'Dr. Mohan Venkatesh',   spec:'ENT',               qual:'MBBS, MS (ENT)',               exp:12, expR:'10+',  fee:800,  gender:'Male',   clinic:'NeuraCare ENT Centre – Chennai',      loc:'Chennai',    rating:90, patients:'1.1K+', avail:'Today',    ctype:'online',  verified:false, init:'MV'},
+  {id:9,  name:'Dr. Lakshmi Devi',      spec:'General Physician', qual:'MBBS, MD (Internal Medicine)', exp:8,  expR:'5-10', fee:680,  gender:'Female', clinic:'NeuraCare Clinic – Coimbatore',       loc:'Coimbatore', rating:94, patients:'1.5K+', avail:'Today',    ctype:'both',    verified:true,  init:'LD'},
+  {id:10, name:'Dr. Vivek Sharma',      spec:'Neurologist',       qual:'MBBS, MD, DM (Neurology)',     exp:18, expR:'10+',  fee:1500, gender:'Male',   clinic:'NeuraCare Brain Centre – Mumbai',     loc:'Mumbai',     rating:98, patients:'4.2K+', avail:'Tomorrow', ctype:'both',    verified:true,  init:'VS'},
+];
+
+/* ─── STATE ──────────────────────────────────────── */
+let displayedDoctors = [...ALL_DOCTORS];
+let consultMode = 'online';
+
+/* ─── HISTORY-AWARE NAVIGATION ───────────────────── */
+function navigateTo(state, push = true) {
+  if (push) {
+    window.history.pushState(state, '', state.view === 'home' ? '#home' : `#doctors/${encodeURIComponent(state.spec || state.search || 'all')}`);
+  }
+  applyState(state);
+}
+
+function applyState(state) {
+  if (!state || state.view === 'home') {
+    showView('home');
+    closeFilter();
+    setActive('home');
+    return;
+  }
+  if (state.view === 'doctors') {
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      displayedDoctors = ALL_DOCTORS.filter(d =>
+        d.name.toLowerCase().includes(q) || d.spec.toLowerCase().includes(q) || d.qual.toLowerCase().includes(q)
+      );
+      document.getElementById('bcSpec').textContent = `"${state.search}"`;
+      document.getElementById('docTitle').textContent = 'Search Results';
+    } else if (state.spec && state.spec !== 'All Doctors') {
+      const filtered = ALL_DOCTORS.filter(d =>
+        d.spec.toLowerCase().includes(state.spec.toLowerCase().split(' ')[0])
+      );
+      displayedDoctors = filtered.length ? filtered : [...ALL_DOCTORS];
+      document.getElementById('bcSpec').textContent = state.spec;
+      document.getElementById('docTitle').textContent = `Consult ${state.spec}s Online`;
+    } else {
+      displayedDoctors = [...ALL_DOCTORS];
+      document.getElementById('bcSpec').textContent = 'All Doctors';
+      document.getElementById('docTitle').textContent = 'All Doctors';
+    }
+    showView('doctors');
+    openFilter();
+    renderDoctors(displayedDoctors);
+    setActive('doctors');
+  }
+}
+
+window.addEventListener('popstate', e => applyState(e.state));
+
+/* ─── RENDER SPECIALTIES ─────────────────────────── */
+function renderSpecialties() {
+  document.getElementById('specGrid').innerHTML = SPECIALTIES.map((s,i) => {
+    const pal = SPEC_PALETTE[i % SPEC_PALETTE.length];
+    const icon = SPEC_ICONS[s.name] || '';
+    return `<div class="spec-card" onclick="openSpecialty('${s.name.replace(/'/g,"\\'")}')">
+       <div class="spec-icon" style="background:${pal.bg};color:${pal.accent}">
+         <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">${icon}</svg>
+       </div>
+       <div class="spec-name">${s.name}</div>
+     </div>`;
+  }).join('');
+}
+
+/* ─── RENDER DOCTORS ─────────────────────────────── */
+function ctLabel(t) {
+  return t==='online' ? 'Online Consult Available'
+       : t==='offline'? 'In-Clinic Available'
+       : 'Online & In-Clinic Available';
+}
+
+function renderDoctors(list) {
+  document.getElementById('docCount').textContent = `(${list.length} doctor${list.length!==1?'s':''})`;
+  const g = document.getElementById('docGrid');
+  if (!list.length) {
+    g.innerHTML = `<div class="empty-state"><div class="emoji">🔍</div><h3>No doctors match your filters</h3><p>Try adjusting or clearing some filters.</p></div>`;
+    return;
+  }
+  g.innerHTML = list.map((d,i)=>`
+    <div class="doc-card" style="animation-delay:${i*55}ms">
+      <div class="card-left">
+        <div class="doc-avatar">${d.init}</div>
+        <div class="card-tags">
+          <div class="brand-pill"><span class="brand-pill-icon"><img src="../Assets/Images/CMS Logo.png" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"/><svg viewBox="0 0 24 24" style="display:none"><path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/></svg></span>NeuraCare</div>
+          ${d.verified?`<div class="verified-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Verified</div>`:''}
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div>
+            <div class="doc-name">${d.name}</div>
+            <div class="doc-spec">${d.spec}</div>
+          </div>
+          <div class="on-time-badge">ON TIME GUARANTEE</div>
+        </div>
+        <div class="doc-qual">${d.exp} YEARS &bull; ${d.qual}</div>
+        <div class="doc-meta">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>${d.loc}</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>${d.clinic}</span>
+        </div>
+        <div class="card-footer">
+          <div class="rating-row">
+            <div class="rating-pill">👍 ${d.rating}% (${d.patients} Patients)</div>
+            <div class="avail-row"><span class="avail-dot"></span><span class="avail-text">${ctLabel(d.ctype)}</span></div>
+          </div>
+          <div class="card-right">
+            <div class="doc-fee">₹${d.fee} <span>/ session</span></div>
+            <div class="card-actions">
+              <button class="btn-profile"
+                  onclick="window.location.href='#'">View Profile
+              </button>
+              <button class="btn-book" onclick="bookDoc('${d.name.replace(/'/g,"\\'")}')">Book Appointment</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ─── FILTERS ────────────────────────────────────── */
+function getChecked(f) {
+  return [...document.querySelectorAll(`input[data-f="${f}"]:checked`)].map(e=>e.value);
+}
+function applyFilters() {
+  const sp  = getChecked('spec');
+  const ex  = getChecked('exp');
+  const ge  = getChecked('gender');
+  const fe  = getChecked('fee');
+  const av  = getChecked('avail');
+  const mo  = getChecked('mode');
+
+  displayedDoctors = ALL_DOCTORS.filter(d => {
+    if (sp.length && !sp.includes(d.spec)) return false;
+    if (ex.length && !ex.some(v =>
+      v==='0-5'   ? d.exp<=5 :
+      v==='5-10'  ? d.exp>5&&d.exp<=10 :
+      v==='10-16' ? d.exp>10&&d.exp<=16 :
+      d.exp>16)) return false;
+    if (ge.length && !ge.includes(d.gender)) return false;
+    if (fe.length && !fe.some(v =>
+      v==='100-500'  ? d.fee<=500 :
+      v==='500-1000' ? d.fee>500&&d.fee<=1000 :
+      d.fee>1000)) return false;
+    if (av.length && !av.includes(d.avail)) return false;
+    if (mo.length === 1) {
+      const want = mo[0];
+      if (d.ctype !== want && d.ctype !== 'both') return false;
+    }
+    return true;
+  });
+  renderDoctors(displayedDoctors);
+}
+
+function clearAllFilters() {
+  document.querySelectorAll('.fcheck input[type="checkbox"]').forEach(e => {
+    e.checked = (e.dataset.f === 'mode');
+  });
+  displayedDoctors = [...ALL_DOCTORS];
+  renderDoctors(displayedDoctors);
+}
+
+function revealMore(prefix, linkEl) {
+  let i = 1, found = false;
+  while (true) {
+    const el = document.getElementById(`${prefix}-${i}`);
+    if (!el) break;
+    el.classList.remove('hidden');
+    el.classList.add('revealed');
+    found = true; i++;
+  }
+  if (found) linkEl.style.display = 'none';
+}
+function sortDoctors(v) {
+  const s=[...displayedDoctors];
+  if(v==='fee-asc')  s.sort((a,b)=>a.fee-b.fee);
+  if(v==='fee-desc') s.sort((a,b)=>b.fee-a.fee);
+  if(v==='exp')      s.sort((a,b)=>b.exp-a.exp);
+  if(v==='rating')   s.sort((a,b)=>b.rating-a.rating);
+  renderDoctors(s);
+}
+
+/* ─── VIEWS ──────────────────────────────────────── */
+function showView(id) {
+  document.getElementById('view-home').style.display    = id==='home'    ? 'block':'none';
+  document.getElementById('view-doctors').style.display = id==='doctors' ? 'block':'none';
+  document.getElementById('sidebarMain').classList.toggle('compact', id === 'home');
+}
+function openSpecialty(spec) {
+  navigateTo({ view: 'doctors', spec });
+}
+function goHome() {
+  navigateTo({ view: 'home' });
+}
+function navClick(el, id) {
+  setActive(id);
+  if (id === 'home') { navigateTo({ view: 'home' }); return; }
+  if (id === 'doctors') { navigateTo({ view: 'doctors', spec: 'All Doctors' }); return; }
+  if (id === 'profile') { window.location.href = '05-Patient-dashboard.html';
+        return;
+    }
+
+  navigateTo({ view: 'home' });
+}
+function setActive(id) {
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el=document.querySelector(`[data-nav="${id}"]`);
+  if(el) el.classList.add('active');
+}
+
+/* ─── FILTER SIDEBAR OPEN/CLOSE ─────────────────── */
+function openFilter() {
+  document.getElementById('sidebarFilter').classList.add('open');
+  document.getElementById('mainContent').classList.add('filter-open');
+}
+function closeFilter() {
+  document.getElementById('sidebarFilter').classList.remove('open');
+  document.getElementById('mainContent').classList.remove('filter-open');
+}
+
+/* ─── FIND STEPS ─────────────────────────────────── */
+function submitFind() {
+  const s=document.getElementById('stepSpec').value;
+  if(!s){alert('Please select a speciality first.');return;}
+  openSpecialty(s);
+}
+
+/* ─── GLOBAL SEARCH ──────────────────────────────── */
+document.getElementById('globalSearch').addEventListener('input', function () {
+  const q = this.value.trim();
+  if (!q) return;
+  navigateTo({ view: 'doctors', search: q });
+});
+
+/* ─── LOCATION MODAL ─────────────────────────────── */
+document.getElementById('locBtn').addEventListener('click', e => {
+  e.stopPropagation();
+  openLocModal();
+});
+function openLocModal() {
+  document.getElementById('locOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('locModalInput').focus(), 220);
+}
+function closeLocModalDirect() {
+  document.getElementById('locOverlay').classList.remove('open');
+  document.getElementById('locModalInput').value = '';
+  showAllLocOptions();
+}
+function closeLocModal(e) {
+  if (e.target === document.getElementById('locOverlay')) closeLocModalDirect();
+}
+function setLocation(loc) {
+  document.getElementById('locValue').textContent = loc + ' ▲';
+  closeLocModalDirect();
+}
+function useCurrentLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      () => { setLocation('Current Location'); },
+      () => { setLocation('Location unavailable'); }
+    );
+  } else {
+    setLocation('Current Location');
+  }
+}
+function filterLocOptions(q) {
+  const options = document.querySelectorAll('.loc-modal__option');
+  const query   = q.trim().toLowerCase();
+  let visible   = 0;
+  options.forEach(opt => {
+    const match = opt.textContent.trim().toLowerCase().includes(query);
+    opt.style.display = match ? 'flex' : 'none';
+    if (match) visible++;
+  });
+  let empty = document.getElementById('locEmpty');
+  if (!visible && query) {
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.id = 'locEmpty';
+      empty.className = 'loc-modal__empty';
+      empty.textContent = 'No locations found.';
+      document.getElementById('locOptionsList').appendChild(empty);
+    }
+    empty.style.display = 'block';
+  } else if (empty) {
+    empty.style.display = 'none';
+  }
+}
+function showAllLocOptions() {
+  document.querySelectorAll('.loc-modal__option').forEach(o => o.style.display = 'flex');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLocModalDirect();
+});
+
+/* ─── BOOK ───────────────────────────────────────── */
+function bookDoc(name){
+  alert(`Booking flow for ${name}\n→ Connect to your backend API (POST /api/appointments)`);
+}
+
+/* ─── TOPBAR FOLLOWS SIDEBAR HOVER ──────────────── */
+const sidebarMainEl = document.getElementById('sidebarMain');
+const topbarEl = document.querySelector('.topbar');
+
+sidebarMainEl.addEventListener('mouseenter', () => {
+  topbarEl.style.left = sidebarMainEl.classList.contains('compact') ? '200px' : '310px';
+});
+
+sidebarMainEl.addEventListener('mouseleave', () => {
+  topbarEl.style.left = '56px';
+});
+
+/* ─── INIT ───────────────────────────────────────── */
+renderSpecialties();
+document.getElementById('stepDate').value = new Date().toISOString().split('T')[0];
+window.history.replaceState({ view: 'home' }, '', '#home');
+applyState({ view: 'home' });
+</script>
+
+<div id="nc-widget-mount"></div>
+<script>
+(function () {
+  fetch('06-Chatbot.html')
+    .then(res => res.text())
+    .then(html => {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      const mount = document.getElementById('nc-widget-mount');
+
+      // Move everything except <script> tags into the page
+      Array.from(temp.childNodes).forEach(node => {
+        if (node.nodeType === 1 && node.tagName === 'SCRIPT') return;
+        mount.appendChild(node);
+      });
+
+      // Re-create <script> tags manually so they actually run
+      temp.querySelectorAll('script').forEach(oldScript => {
+        const newScript = document.createElement('script');
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        document.body.appendChild(newScript);
+      });
+    })
+    .catch(err => console.error('NeuraCare chatbot failed to load:', err));
+})();
+</script>
+
+</body>
+</html>

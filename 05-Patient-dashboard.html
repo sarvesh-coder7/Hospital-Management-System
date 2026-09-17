@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Dashboard – NeuraCare</title>
+  <link rel="icon" href="../Assets/Images/CMS Logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --white:   #FFFFFF;
+      --bg:      #F5F7F5;
+      --card:    #F5F5F5;
+      --card2:   #F8F9FA;
+      --text:    #333333;
+      --muted:   #6B7280;
+      --accent:  #2E8B57;
+      --accent2: #3DAA6E;
+      --border:  #E4E9E4;
+      --sidebar: #1A2E1F;
+      --red:     #D94F4F;
+      --orange:  #E07B2A;
+      --light-green: #E8F5EE;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Checkbox hack (same as index) ── */
+    #nav-toggle { display: none; }
+
+    /* ── Hamburger: green rounded square, fixed top-left ── */
+    .hamburger {
+      position: fixed;
+      top: 12px; left: 18px;
+      z-index: 200;
+      cursor: pointer;
+      width: 40px; height: 40px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 8px rgba(46,139,87,0.3);
+    }
+
+    .hamburger span {
+      display: block;
+      width: 18px; height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    /* Hamburger → X when checked */
+    #nav-toggle:checked ~ .hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #nav-toggle:checked ~ .hamburger span:nth-child(2) { opacity: 0; }
+    #nav-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh; width: 250px;
+      background: var(--sidebar);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 100;
+      padding-top: 80px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #nav-toggle:checked ~ .sidebar { transform: translateX(0); }
+
+    .sidebar-logo {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 16px;
+    }
+
+    .sidebar-logo span {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px; color: #fff;
+    }
+    .sidebar-logo span b { color: var(--accent2); }
+
+    .sidebar nav { flex: 1; }
+    .sidebar nav ul { list-style: none; padding: 0 12px; }
+
+    .sidebar nav ul li a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      color: #B0C4B8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 2px;
+    }
+
+    .sidebar nav ul li a:hover,
+    .sidebar nav ul li a.active {
+      background: rgba(46,139,87,0.2);
+      color: #fff;
+    }
+
+    .sidebar-bottom {
+      padding: 12px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: auto;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      /* same padding as index: left space only for hamburger icon (72px) */
+      padding: 0 24px 0 72px;
+      z-index: 50;
+      gap: 16px;
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* When sidebar opens: topbar shifts right (hamburger is fixed so stays in place) */
+    #nav-toggle:checked ~ .topbar { margin-left: 250px; }
+
+    .topbar-brand {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px; color: var(--text);
+      flex: 1;
+    }
+    .topbar-brand b { color: var(--accent); }
+
+    .topbar-greeting {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .topbar-greeting strong { color: var(--text); }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent); color: #fff; border: none; }
+    .btn-primary:hover { background: var(--accent2); }
+
+    /* ── Main content: full width like index, no extra left offset ── */
+    main {
+      padding: 80px 40px 40px;
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* When sidebar opens: content shifts right */
+    #nav-toggle:checked ~ main { margin-left: 250px; }
+
+    .content {
+      padding-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Patient Card ── */
+    .patient-card {
+      background: var(--sidebar);
+      border-radius: 14px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .patient-avatar {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: #fff;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .patient-info { flex: 1; }
+    .patient-info h2 { color: #fff; font-size: 20px; font-weight: 600; }
+    .patient-info p  { color: rgba(255,255,255,0.6); font-size: 14px; margin-top: 4px; }
+    .patient-id {
+      border: 1px solid var(--accent2);
+      color: var(--accent2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* ── Stat Cards ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 20px;
+      text-align: center;
+    }
+    .stat-card .num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-card .label { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    /* ── Two-column row ── */
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title svg { color: var(--accent); flex-shrink: 0; }
+
+    /* ── Appointments ── */
+    .appt-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .appt-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .appt-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .appt-dot.upcoming  { background: var(--accent); }
+    .appt-dot.completed { background: #bbb; }
+    .appt-info { flex: 1; }
+    .appt-doctor { font-size: 14px; font-weight: 600; color: var(--text); }
+    .appt-dept   { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .appt-meta   { text-align: right; flex-shrink: 0; }
+    .appt-date   { font-size: 13px; color: var(--muted); }
+    .badge {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge.upcoming  { background: var(--light-green); color: var(--accent); }
+    .badge.completed { background: #f0f0f0; color: #777; }
+
+    /* ── Prescriptions ── */
+    .rx-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .rx-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .rx-icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      background: var(--light-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .rx-icon svg { color: var(--accent); width: 16px; height: 16px; }
+    .rx-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .rx-dose { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Lab Results ── */
+    .lab-table { width: 100%; border-collapse: collapse; }
+    .lab-table th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      font-weight: 600;
+      padding: 0 0 10px 0;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .lab-table td {
+      padding: 11px 0;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .lab-table tr:last-child td { border-bottom: none; }
+    .val-normal { color: var(--accent);  font-weight: 700; }
+    .val-high   { color: var(--red);     font-weight: 700; }
+    .val-warn   { color: var(--orange);  font-weight: 700; }
+    .status-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-pill.normal   { background: var(--light-green); color: var(--accent); }
+    .status-pill.high     { background: #fdeaea; color: var(--red); }
+    .status-pill.moderate { background: #fff0e0; color: var(--orange); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+    #nav-toggle:checked ~ footer { margin-left: 250px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .row   { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      main { padding: 80px 16px 32px; }
+      .topbar-greeting { display: none; }
+      .lab-table th:nth-child(4),
+      .lab-table td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Checkbox toggle — same technique as index page -->
+  <input type="checkbox" id="nav-toggle" checked>
+
+  <!-- Hamburger: green square, turns into X when open -->
+  <label class="hamburger" for="nav-toggle" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </label>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span>Neura<b>Care</b></span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#" class="active">🏠 Dashboard</a></li>
+        <li><a href="04-Booking.html">📅 Appointments</a></li>
+        <li><a href="#">📋 Records</a></li>
+        <li><a href="#">💊 Prescriptions</a></li>
+        <li><a href="#">📈 Lab Results</a></li>
+      </ul>
+    </nav>
+<div class="sidebar-bottom">
+  <ul style="list-style:none; padding: 0 12px;">
+    <li><a href="/" onclick="logout()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;color:#B0C4B8;text-decoration:none;border-radius:8px;font-size:14px;font-weight:500;transition:background 0.2s,color 0.2s;">🚪 Logout</a></li>
+  </ul>
+</div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">Neura<b>Care</b></div>
+    <div class="topbar-greeting">Welcome back, <strong id="greetingName">Jane Doe</strong></div>
+    <a href="04-Booking.html" class="btn btn-primary">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      Book Appointment
+    </a>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <div class="content">
+
+      <!-- Patient Card -->
+      <div class="patient-card">
+        <div class="patient-avatar" id="avatarDisplay">
+          <span id="avatarInitials">JD</span>
+          <img id="avatarImg" src="" alt="Patient Photo"
+            style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%; position:absolute; top:0; left:0;">
+        </div>
+        <div class="patient-info">
+          <h2 id="patientName">Jane Doe</h2>
+          <p>
+            <span id="patientAge">28</span> yrs &nbsp;·&nbsp;
+            <span id="patientGender">Female</span> &nbsp;·&nbsp;
+            Blood Group: <span id="patientBlood">B+</span>
+          </p>
+        </div>
+        <div class="patient-id" id="patientId">PAT1001</div>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stats">
+        <div class="stat-card"><div class="num">6</div><div class="label">Total Visits</div></div>
+        <div class="stat-card"><div class="num">2</div><div class="label">Upcoming</div></div>
+        <div class="stat-card"><div class="num">3</div><div class="label">Prescriptions</div></div>
+        <div class="stat-card"><div class="num">4</div><div class="label">Lab Reports</div></div>
+      </div>
+
+      <!-- Appointments + Prescriptions -->
+      <div class="row">
+
+        <!-- Appointments -->
+        <div class="section-card">
+          <div class="section-title">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Appointments
+          </div>
+
+          <div class="appt-item">
+            <div class="appt-dot upcoming"></div>
+            <div class="appt-info">
+              <div class="appt-doctor">Dr. Rajesh Sharma</div>
+              <div class="appt-dept">Cardiology</div>
+            </div>
+            <div class="appt-meta">
+              <div class="appt-date">25 Jun 2026</div>
+              <span class="badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="appt-item">
+            <div class="appt-dot upcoming"></div>
+            <div class="appt-info">
+              <div class="appt-doctor">Dr. Sarah Chen</div>
+              <div class="appt-dept">Neurology</div>
+            </div>
+            <div class="appt-meta">
+              <div class="appt-date">02 Jul 2026</div>
+              <span class="badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="appt-item">
+            <div class="appt-dot completed"></div>
+            <div class="appt-info">
+              <div class="appt-doctor">Dr. Priya Menon</div>
+              <div class="appt-dept">Endocrinology</div>
+            </div>
+            <div class="appt-meta">
+              <div class="appt-date">10 May 2026</div>
+              <span class="badge completed">Completed</span>
+            </div>
+          </div>
+
+          <div class="appt-item">
+            <div class="appt-dot completed"></div>
+            <div class="appt-info">
+              <div class="appt-doctor">Dr. Arjun Kumar</div>
+              <div class="appt-dept">Orthopaedics</div>
+            </div>
+            <div class="appt-meta">
+              <div class="appt-date">18 Mar 2026</div>
+              <span class="badge completed">Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prescriptions -->
+        <div class="section-card">
+          <div class="section-title">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
+            </svg>
+            Current Prescriptions
+          </div>
+
+          <div class="rx-item">
+            <div class="rx-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </div>
+            <div>
+              <div class="rx-name">Metformin 500mg</div>
+              <div class="rx-dose">Twice daily &nbsp;·&nbsp; After meals</div>
+            </div>
+          </div>
+
+          <div class="rx-item">
+            <div class="rx-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </div>
+            <div>
+              <div class="rx-name">Levothyroxine 50mcg</div>
+              <div class="rx-dose">Once daily &nbsp;·&nbsp; Morning</div>
+            </div>
+          </div>
+
+          <div class="rx-item">
+            <div class="rx-icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+            </div>
+            <div>
+              <div class="rx-name">Vitamin D3 60K IU</div>
+              <div class="rx-dose">Once weekly &nbsp;·&nbsp; Sunday</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lab Results -->
+      <div class="section-card">
+        <div class="section-title">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          Recent Lab Results
+        </div>
+
+        <table class="lab-table">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Date</th>
+              <th>Result</th>
+              <th>Reference Range</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Fasting Blood Sugar</strong></td>
+              <td>12 Jun 2026</td>
+              <td class="val-high">118 mg/dL</td>
+              <td>70 – 100 mg/dL</td>
+              <td><span class="status-pill high">High</span></td>
+            </tr>
+            <tr>
+              <td><strong>HbA1c</strong></td>
+              <td>12 Jun 2026</td>
+              <td class="val-warn">6.1%</td>
+              <td>&lt; 5.7%</td>
+              <td><span class="status-pill moderate">Moderate</span></td>
+            </tr>
+            <tr>
+              <td><strong>Total Cholesterol</strong></td>
+              <td>12 Jun 2026</td>
+              <td class="val-high">178 mg/dL</td>
+              <td>&lt; 170 mg/dL</td>
+              <td><span class="status-pill high">High</span></td>
+            </tr>
+            <tr>
+              <td><strong>Haemoglobin</strong></td>
+              <td>12 Jun 2026</td>
+              <td class="val-normal">12.8 g/dL</td>
+              <td>12 – 16 g/dL</td>
+              <td><span class="status-pill normal">Normal</span></td>
+            </tr>
+            <tr>
+              <td><strong>TSH</strong></td>
+              <td>15 May 2026</td>
+              <td class="val-normal">2.4 mIU/L</td>
+              <td>0.4 – 4.0 mIU/L</td>
+              <td><span class="status-pill normal">Normal</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+
+  <footer>
+    © 2024 NeuraCare. All rights reserved.
+  </footer>
+<script>
+
+
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('existing') === 'true') {
+  sessionStorage.setItem('neura_user', JSON.stringify({
+    userId:       urlParams.get('userId'),
+    role:         urlParams.get('role'),
+    firstName:    urlParams.get('firstName'),
+    lastName:     urlParams.get('lastName'),
+    profileImage: urlParams.get('profileImage'),
+    dob:          urlParams.get('dob'),
+    gender:       urlParams.get('gender'),
+    bloodGroup:   urlParams.get('bloodGroup')
+  }));
+  // Clean the URL so params don't show
+  window.history.replaceState({}, '', '/Pages/05-Patient-dashboard.html');
+}
+
+
+// ── Age calculator ──
+function calculateAge(dobString) {
+  const dob = new Date(dobString);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const hasNotHadBirthdayYet =
+    today.getMonth() < dob.getMonth() ||
+    (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate());
+  if (hasNotHadBirthdayYet) age--;
+  return age;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Try to get real session data ──
+  let userData = JSON.parse(sessionStorage.getItem('neura_user'));
+
+  // ── If no session (opened directly from file), use dummy data for preview ──
+  if (!userData) {
+    userData = {
+      firstName:    'Jane',
+      lastName:     'Doe',
+      dob:          '1998-03-15',
+      gender:       'Female',
+      bloodGroup:   'B+',
+      userId:       'PAT1001',
+      profileImage: ''
+    };
+  }
+
+  // ── Populate name ──
+  const fullName = (userData.firstName || '') + ' ' + (userData.lastName || '');
+  document.getElementById('patientName').textContent  = fullName.trim();
+  document.getElementById('greetingName').textContent = userData.firstName || 'User';
+
+  // ── Age ──
+  if (userData.dob) {
+    document.getElementById('patientAge').textContent = calculateAge(userData.dob);
+  }
+
+  // ── Gender ──
+  if (userData.gender) {
+    document.getElementById('patientGender').textContent = userData.gender;
+  }
+
+  // ── Blood group ──
+  if (userData.bloodGroup) {
+    document.getElementById('patientBlood').textContent = userData.bloodGroup;
+  }
+
+  // ── Patient ID ──
+  if (userData.userId) {
+    document.getElementById('patientId').textContent = userData.userId;
+  }
+
+  // ── Profile photo or initials ──
+  if (userData.profileImage) {
+    const img = document.getElementById('avatarImg');
+    img.src = userData.profileImage;
+    img.style.display = 'block';
+    document.getElementById('avatarInitials').style.display = 'none';
+  } else if (userData.firstName && userData.lastName) {
+    document.getElementById('avatarInitials').textContent =
+      (userData.firstName[0] + userData.lastName[0]).toUpperCase();
+  }
+
+});
+
+// ── Logout — clears session and goes to login ──
+function logout() {
+  sessionStorage.removeItem('neura_user');
+  window.location.href = '02-Login.html';
+}
+</script>
+
+<div id="nc-widget-mount"></div>
+<script>
+(function () {
+  fetch('06-Chatbot.html')
+    .then(res => res.text())
+    .then(html => {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      const mount = document.getElementById('nc-widget-mount');
+
+      // Move everything except <script> tags into the page
+      Array.from(temp.childNodes).forEach(node => {
+        if (node.nodeType === 1 && node.tagName === 'SCRIPT') return;
+        mount.appendChild(node);
+      });
+
+      // Re-create <script> tags manually so they actually run
+      temp.querySelectorAll('script').forEach(oldScript => {
+        const newScript = document.createElement('script');
+        if (oldScript.src) {
+          newScript.src = oldScript.src;
+        } else {
+          newScript.textContent = oldScript.textContent;
+        }
+        document.body.appendChild(newScript);
+      });
+    })
+    .catch(err => console.error('NeuraCare chatbot failed to load:', err));
+})();
+</script>
+
+</body>
+</html>

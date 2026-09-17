@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuraCare</title>
+  <link rel="icon" href="../Assets/Images/CMS Logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+ 
+    :root {
+      --white:   #FFFFFF;
+      --bg:      #F5F7F5;
+      --card:    #F5F5F5;
+      --card2:   #F8F9FA;
+      --text:    #333333;
+      --muted:   #6B7280;
+      --accent:  #2E8B57;
+      --accent2: #3DAA6E;
+      --border:  #E4E9E4;
+      --sidebar: #1A2E1F;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+ 
+    #nav-toggle { display: none; }
+ 
+    .hamburger {
+      position: fixed;
+      top: 12px; left: 18px;
+      z-index: 200;
+      cursor: pointer;
+      width: 40px; height: 40px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 8px rgba(46,139,87,0.3);
+    }
+ 
+    .hamburger span {
+      display: block;
+      width: 18px; height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+ 
+    #nav-toggle:checked ~ .hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    #nav-toggle:checked ~ .hamburger span:nth-child(2) { opacity: 0; }
+    #nav-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+ 
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh; width: 250px;
+      background: var(--sidebar);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 100;
+      padding-top: 80px;
+    }
+ 
+    #nav-toggle:checked ~ .sidebar { transform: translateX(0); }
+ 
+    .sidebar-logo {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 16px;
+    }
+ 
+    .sidebar-logo span {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px; color: #fff;
+    }
+ 
+    .sidebar-logo span b { color: var(--accent2); }
+
+    .sidebar-separator{
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin: 16px 12px;
+  }
+ 
+    .sidebar nav ul { list-style: none; padding: 0 12px; }
+ 
+    .sidebar nav ul li a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      color: #B0C4B8;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 2px;
+    }
+ 
+    .sidebar nav ul li a:hover,
+    .sidebar nav ul li a.active {
+      background: rgba(46,139,87,0.2);
+      color: #fff;
+    }
+ 
+    /* overlay removed — no shadow over content */
+    .overlay { display: none; }
+ 
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px 0 72px;
+      z-index: 50;
+      gap: 16px;
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+ 
+    /* push topbar right when sidebar opens */
+    #nav-toggle:checked ~ header.topbar {
+      margin-left: 250px;
+    }
+ 
+    .topbar-brand {
+      font-family: 'DM Serif Display', serif;
+      font-size: 30px; color: var(--text);
+      flex: 1;
+    }
+ 
+    .topbar-brand b { color: var(--accent); }
+ 
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+ 
+    .btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s, transform 0.1s;
+    }
+ 
+    .btn:active { transform: scale(0.97); }
+ 
+    .btn-outline {
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      background: transparent;
+    }
+ 
+    .btn-outline:hover { background: rgba(46,139,87,0.06); }
+ 
+    .btn-primary {
+      background: var(--accent);
+      color: #fff; border: none;
+    }
+ 
+    .btn-primary:hover { background: var(--accent2); }
+ 
+    main {
+      padding: 80px 40px 40px;
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+ 
+    /* push main content right when sidebar opens */
+    #nav-toggle:checked ~ main {
+      margin-left: 250px;
+    }
+ 
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      padding: 48px 0 40px;
+    }
+ 
+    .hero-text h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.8rem; line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+ 
+    .hero-text h1 span { color: var(--accent); }
+ 
+    .hero-text p {
+      color: var(--muted);
+      font-size: 16px; line-height: 1.7;
+      margin-bottom: 28px;
+    }
+ 
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+ 
+    .hero-visual {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+    }
+ 
+    .hero-visual .big-icon { font-size: 80px; margin-bottom: 16px; }
+    .hero-visual p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+ 
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+ 
+    .stat-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+ 
+    .stat-card .num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem; color: var(--accent);
+    }
+ 
+    .stat-card .label {
+      font-size: 13px; color: var(--muted);
+      margin-top: 4px;
+    }
+ 
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem; color: var(--text);
+      margin-bottom: 20px;
+    }
+ 
+    .services {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+ 
+    .service-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+ 
+    .service-card:hover {
+      box-shadow: 0 6px 24px rgba(46,139,87,0.12);
+      transform: translateY(-2px);
+    }
+ 
+    .service-card .icon { font-size: 32px; margin-bottom: 12px; }
+    .service-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .service-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+ 
+    .doctors {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+ 
+    .doctor-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+    }
+ 
+    .doctor-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-family: 'DM Serif Display', serif;
+    }
+ 
+    .doctor-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .doctor-card .specialty { font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+    .doctor-card p { font-size: 12px; color: var(--muted); }
+ 
+    .cta-banner {
+      background: var(--accent);
+      border-radius: 16px;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+ 
+    .cta-banner h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem; color: #fff;
+      margin-bottom: 8px;
+    }
+ 
+    .cta-banner p { color: rgba(255,255,255,0.8); font-size: 14px; }
+ 
+    .btn-white {
+      background: #fff;
+      color: var(--accent);
+      border: none;
+      padding: 12px 28px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+ 
+    .btn-white:hover { background: #f0faf4; }
+ 
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      margin-left: 0;
+      transition: margin-left 0.3s ease;
+    }
+ 
+    #nav-toggle:checked ~ footer {
+      margin-left: 250px;
+    }
+ 
+    @media (max-width: 768px) {
+      .hero        { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .stats       { grid-template-columns: repeat(2, 1fr); }
+      .services    { grid-template-columns: 1fr; }
+      .doctors     { grid-template-columns: 1fr; }
+      .hero-text h1 { font-size: 2rem; }
+    }
+ 
+  </style>
+</head>
+<body>
+ 
+  <input type="checkbox" id="nav-toggle" checked>
+ 
+  <label class="hamburger" for="nav-toggle">
+    <span></span><span></span><span></span>
+  </label>
+ 
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span>Neura<b>Care</b></span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#" class="active">🏠 Home</a></li>
+        <li><a href="Pages/09-Services.html">🩺 Services</a></li>
+        <li><a href="Pages/08-Doctors.html">👨‍⚕️ Doctors</a></li>
+        <li><a href="Pages/02-Login.html">📅 Appointments</a></li>
+        <li><a href="#">💊 Pharmacy</a></li>
+        <li><a href="#">📋 Records</a></li>
+        <li><a href="#">📞 Contact</a></li>
+        <li class="sidebar-separator"></li>
+        <li><a href="Pages/07-Developer.html"><\> Developer</a></li>
+      </ul>
+    </nav>
+  </aside>
+ 
+  <header class="topbar">
+    <div class="topbar-brand">Neura<b>Care</b></div>
+    <div class="topbar-actions">
+      <a href="Pages/02-Login.html" class="btn btn-outline">Sign in</a>
+      <a href="Pages/02-Login.html" class="btn btn-primary">Book Appointment</a>
+    </div>
+  </header>
+ 
+  <main>
+ 
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Your Health,<br>Our <span>Priority</span></h1>
+        <p>Trusted healthcare services with experienced doctors. Book appointments, manage records, and get care — all in one place.</p>
+        <div class="hero-actions">
+          <a href="Pages/02-Login.html" class="btn btn-primary">Book Appointment</a>
+          <a href="#" class="btn btn-outline">Our Services</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="big-icon">🏥</div>
+        <p>Serving patients since 2005<br>Trusted by 50,000+ families</p>
+      </div>
+    </section>
+ 
+    <section class="stats">
+      <div class="stat-card">
+        <div class="num">50K+</div>
+        <div class="label">Patients Treated</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">120+</div>
+        <div class="label">Expert Doctors</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">20+</div>
+        <div class="label">Years of Service</div>
+      </div>
+    </section>
+ 
+    <h2 class="section-title">Our Services</h2>
+    <section class="services">
+      <div class="service-card">
+        <div class="icon">❤️</div>
+        <h3>Cardiology</h3>
+        <p>Expert heart care with advanced diagnostics and treatment plans.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">🧠</div>
+        <h3>Neurology</h3>
+        <p>Specialized care for brain, spine, and nervous system conditions.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">🦷</div>
+        <h3>Dental Care</h3>
+        <p>Complete dental services from routine checkups to surgery.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">👁️</div>
+        <h3>Ophthalmology</h3>
+        <p>Full eye care services including LASIK and cataract treatment.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">🍼</div>
+        <h3>Pediatrics</h3>
+        <p>Gentle, compassionate care for infants, children and teens.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">🩻</div>
+        <h3>Radiology</h3>
+        <p>State-of-the-art imaging including MRI, CT scan and X-ray.</p>
+      </div>
+    </section>
+ 
+    <h2 class="section-title">Meet Our Doctors</h2>
+    <section class="doctors">
+      <div class="doctor-card">
+        <div class="doctor-avatar">R</div>
+        <h3>Dr. Ravi Kumar</h3>
+        <div class="specialty">Cardiologist</div>
+        <p>15 years experience · MBBS, MD</p>
+      </div>
+      <div class="doctor-card">
+        <div class="doctor-avatar">P</div>
+        <h3>Dr. Priya Nair</h3>
+        <div class="specialty">Neurologist</div>
+        <p>12 years experience · MBBS, DM</p>
+      </div>
+      <div class="doctor-card">
+        <div class="doctor-avatar">S</div>
+        <h3>Dr. Suresh Babu</h3>
+        <div class="specialty">Pediatrician</div>
+        <p>10 years experience · MBBS, DCH</p>
+      </div>
+    </section>
+ 
+    <div class="cta-banner">
+      <div>
+        <h2>Ready to Book an Appointment?</h2>
+        <p>Available Monday – Saturday, 8:00 AM to 8:00 PM</p>
+      </div>
+      <a href="Pages/02-Login.html" class="btn btn-white">Book Now →</a>
+    </div>
+ 
+  </main>
+ 
+  <footer>
+    © 2026 NeuraCare. All rights reserved.
+  </footer>
+
+
+ 
+</body>
+</html>

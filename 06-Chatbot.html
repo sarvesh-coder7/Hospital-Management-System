@@ -1,0 +1,469 @@
+<!-- 
+  NeuraCare Chatbot Widget
+  ========================
+  Paste this entire block just before </body> in any NeuraCare HTML page.
+-->
+
+<style>
+  /* ── Floating trigger button ── */
+@keyframes nc-glow-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.75), 0 0 22px 8px rgba(22,101,52,0.5); }
+  50%  { box-shadow: 0 0 0 22px rgba(74,222,128,0), 0 0 48px 20px rgba(74,222,128,0.3); }
+  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0), 0 0 22px 8px rgba(22,101,52,0.5); }
+}
+#nc-chat-btn {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #166534;
+  border: 2px solid rgba(74,222,128,0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  animation: nc-glow-pulse 2.2s ease-in-out infinite;
+  transition: transform 0.2s, background 0.2s, opacity 0.2s;
+}
+#nc-chat-btn:hover {
+  background: #14532d;
+  transform: scale(1.08);
+  animation: none;
+  box-shadow: 0 0 0 14px rgba(74,222,128,0.2), 0 0 50px 18px rgba(74,222,128,0.35);
+}
+
+#nc-chat-btn img { 
+  width: 22px; 
+  height: 22px; 
+  object-fit: contain; filter: 
+  brightness(0) invert(1); 
+}
+
+  #nc-chat-btn.hidden { 
+    opacity: 0; 
+    pointer-events: none; 
+    transform: scale(0.8); 
+    animation: none; 
+  }
+  
+
+  /* ── Page blur overlay ── */
+  #nc-blur-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.18);
+    z-index: 9996;
+  }
+  #nc-blur-overlay.visible { display: block; }
+
+  /* ── Side panel ── */
+  #nc-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 490px;
+    height: 100vh;
+    background: #fff;
+    z-index: 9997;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: -4px 0 32px rgba(0,0,0,0.13);
+  }
+  #nc-panel.open { transform: translateX(0); }
+
+  /* ── Panel header ── */
+  .ncp-header {
+    background: #1a3c2a;
+    padding: 16px 18px 12px;
+    flex-shrink: 0;
+  }
+  .ncp-header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .ncp-av {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: #14532d;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ncp-title { font-size: 16px; font-weight: 600; color: #fff; letter-spacing: -0.2px; }
+  .ncp-title span { color: #4ade80; }
+  .ncp-sub { font-size: 12px; color: #86efac; margin-top: 1px; }
+
+  /* Status badges */
+  .ncp-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ncp-badge { font-size: 11px; border-radius: 20px; padding: 3px 9px; font-weight: 500; }
+  .ncp-badge.online    { background: #14532d; color: #86efac; border: 0.5px solid #166534; }
+  .ncp-badge.claude    { background: #1e3a5f; color: #93c5fd; border: 0.5px solid #1e40af; }
+  .ncp-badge.bilingual { background: #3b1f5e; color: #c4b5fd; border: 0.5px solid #6d28d9; }
+
+  /* ── Tabs (only 2 now) ── */
+  .ncp-tabs {
+    display: flex;
+    border-bottom: 0.5px solid #d1fae5;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .ncp-tab {
+    flex: 1;
+    padding: 11px 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .ncp-tab.active { color: #166534; border-bottom-color: #166534; }
+  .ncp-tab:hover:not(.active) { color: #1a3c2a; }
+
+  /* ── Tab panes ── */
+  .ncp-tab-pane { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+  .ncp-tab-pane.active { display: flex; }
+
+  /* ── Messages ── */
+  .ncp-msgs {
+    flex: 1; overflow-y: auto;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
+    background: #f8faf9;
+  }
+  .ncp-msgs::-webkit-scrollbar { width: 4px; }
+  .ncp-msgs::-webkit-scrollbar-thumb { background: #d1fae5; border-radius: 4px; }
+
+  .ncm { display: flex; gap: 8px; max-width: 90%; }
+  .ncm.user { align-self: flex-end; flex-direction: row-reverse; }
+  .ncm-av {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #14532d;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .ncm-bubble {
+    padding: 10px 13px; border-radius: 14px;
+    font-size: 13.5px; line-height: 1.55;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .ncm.bot .ncm-bubble  { background: #fff; color: #1a3c2a; border: 0.5px solid #d1fae5; border-bottom-left-radius: 4px; }
+  .ncm.user .ncm-bubble { background: #166534; color: #fff; border-bottom-right-radius: 4px; }
+
+  /* Welcome block */
+  .ncp-welcome { padding: 20px 16px 12px; text-align: center; }
+  .ncp-welcome-icon { font-size: 36px; margin-bottom: 8px; }
+  .ncp-welcome h3 { font-size: 15px; font-weight: 600; color: #1a3c2a; margin-bottom: 4px; }
+  .ncp-welcome p  { font-size: 12.5px; color: #6b7280; line-height: 1.5; }
+
+  .ncp-qa-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; padding: 0 16px 12px; flex-shrink: 0;
+  }
+  .ncp-qa-card {
+    background: #f0fdf4; border: 0.5px solid #bbf7d0;
+    border-radius: 10px; padding: 12px 10px;
+    cursor: pointer; text-align: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .ncp-qa-card:hover { background: #dcfce7; border-color: #4ade80; }
+  .ncp-qa-card .qa-icon  { font-size: 22px; margin-bottom: 5px; }
+  .ncp-qa-card .qa-label { font-size: 12px; font-weight: 500; color: #166534; }
+
+  /* Chips */
+  .ncp-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 16px 10px; flex-shrink: 0; }
+  .ncp-chip {
+    background: #f0fdf4; border: 0.5px solid #bbf7d0;
+    border-radius: 20px; padding: 5px 11px;
+    font-size: 11.5px; cursor: pointer; color: #166534;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .ncp-chip:hover { background: #dcfce7; border-color: #4ade80; }
+
+  /* Typing */
+  .ncp-typing { display: flex; gap: 8px; align-items: flex-start; }
+  .ncp-typing-bub {
+    background: #fff; border: 0.5px solid #d1fae5;
+    border-radius: 14px; border-bottom-left-radius: 4px;
+    padding: 11px 14px; display: flex; gap: 4px; align-items: center;
+  }
+  .ncp-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: ncbop 1.2s infinite; }
+  .ncp-dot:nth-child(2){animation-delay:.2s} .ncp-dot:nth-child(3){animation-delay:.4s}
+  @keyframes ncbop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+  /* Input row */
+  .ncp-input-row {
+    display: flex; gap: 8px;
+    padding: 10px 14px;
+    border-top: 0.5px solid #d1fae5;
+    background: #fff; align-items: center; flex-shrink: 0;
+  }
+  .ncp-input {
+    flex: 1; border: 0.5px solid #d1fae5; border-radius: 22px;
+    padding: 9px 14px; font-size: 13.5px; color: #1a3c2a;
+    background: #f0fdf4; outline: none; font-family: inherit;
+  }
+  .ncp-input:focus { border-color: #4ade80; background: #fff; }
+  .ncp-input::placeholder { color: #86efac; }
+  .ncp-send {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #166534; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; flex-shrink: 0; transition: background 0.15s;
+  }
+  .ncp-send:hover { background: #14532d; }
+  .ncp-footer { font-size: 11px; color: #9ca3af; text-align: center; padding: 6px 14px 10px; background: #fff; flex-shrink: 0; }
+
+  /* Recommend tab */
+  .ncp-rec-list { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .ncp-rec-card {
+    background: #fff; border: 0.5px solid #d1fae5;
+    border-radius: 10px; padding: 13px 14px;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .ncp-rec-card:hover { border-color: #4ade80; }
+  .ncp-rec-card .rc-icon  { font-size: 18px; margin-bottom: 4px; }
+  .ncp-rec-card .rc-name  { font-size: 13.5px; font-weight: 600; color: #1a3c2a; margin-bottom: 2px; }
+  .ncp-rec-card .rc-spec  { font-size: 12px; color: #6b7280; }
+  .ncp-rec-card .rc-tag   { display: inline-block; margin-top: 6px; background: #f0fdf4; color: #166534; border-radius: 20px; padding: 3px 9px; font-size: 11px; font-weight: 500; }
+
+  @media (max-width: 480px) { #nc-panel { width: 100vw; } }
+</style>
+
+<!-- Blur overlay — clicking outside closes the panel -->
+<div id="nc-blur-overlay"></div>
+
+<!-- Side panel -->
+<div id="nc-panel" role="dialog" aria-label="NeuraCare Health Assistant">
+
+  <!-- Header (no close button) -->
+  <div class="ncp-header">
+    <div class="ncp-header-top">
+      <div class="ncp-av">
+        <img src="../Assets/Images/CMS Logo.png" alt="NeuraCare" style="width: 26px; height: 26px; object-fit: contain; border-radius: 50%;" />
+      </div>
+      <div>
+        <div class="ncp-title">Neura<span>Care</span> AI</div>
+        <div class="ncp-sub">Health Assistant</div>
+      </div>
+    </div>
+    <div class="ncp-badges">
+      <span class="ncp-badge online">&#x25CF; Online</span>
+      <span class="ncp-badge claude">&#x2726; Claude AI</span>
+      <span class="ncp-badge bilingual">&#x1F310; EN supported</span>
+    </div>
+  </div>
+
+  <!-- Tabs — only Chat + Recommend -->
+  <div class="ncp-tabs">
+    <button class="ncp-tab active" onclick="switchTab('chat', this)">&#x1F4AC; Chat</button>
+    <button class="ncp-tab" onclick="switchTab('recommend', this)">&#x2B50; Recommend</button>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div class="ncp-tab-pane active" id="tab-chat">
+    <div id="ncp-welcome-block">
+      <div class="ncp-welcome">
+        <div class="ncp-welcome-icon">&#x1FA7A;</div>
+        <h3>Welcome to NeuraCare AI</h3>
+        <p>Your intelligent health assistant. Ask about symptoms, medications, specialties, or appointments.</p>
+      </div>
+      <div class="ncp-qa-grid">
+        <div class="ncp-qa-card" onclick="askQ('What are the symptoms I should watch for?')">
+          <div class="qa-icon">&#x1F4CB;</div>
+          <div class="qa-label">Symptom Check</div>
+        </div>
+        <div class="ncp-qa-card" onclick="askQ('Which specialist should I see for my condition?')">
+          <div class="qa-icon">&#x1F9B3;</div>
+          <div class="qa-label">Find Specialist</div>
+        </div>
+        <div class="ncp-qa-card" onclick="askQ('How do I prepare for my appointment?')">
+          <div class="qa-icon">&#x1F4C5;</div>
+          <div class="qa-label">Appointment Help</div>
+        </div>
+        <div class="ncp-qa-card" onclick="askQ('What medications are commonly prescribed for diabetes?')">
+          <div class="qa-icon">&#x1F48A;</div>
+          <div class="qa-label">Medications</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ncp-msgs" id="ncp-msgs"></div>
+
+    <div class="ncp-chips" id="ncp-chips">
+      <span class="ncp-chip" onclick="askQ('High blood pressure symptoms')">Blood pressure</span>
+      <span class="ncp-chip" onclick="askQ('When to see a neurologist?')">Neurology</span>
+      <span class="ncp-chip" onclick="askQ('Diabetes management tips')">Diabetes</span>
+      <span class="ncp-chip" onclick="askQ('Cardiology check-up advice')">Heart health</span>
+    </div>
+
+    <div class="ncp-input-row">
+      <input class="ncp-input" id="ncp-qi" type="text" placeholder="Ask a health question…" onkeydown="if(event.key==='Enter')ncSend()" />
+      <button class="ncp-send" onclick="ncSend()" aria-label="Send">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+    <div class="ncp-footer">For personal medical advice, consult your NeuraCare doctor.</div>
+  </div>
+
+  <!-- RECOMMEND TAB -->
+  <div class="ncp-tab-pane" id="tab-recommend">
+    <div class="ncp-rec-list">
+      <div style="font-size:13px;color:#6b7280;padding:2px 0 8px;font-weight:500;">Suggested specialties based on common queries</div>
+      <div class="ncp-rec-card" onclick="askQ('Tell me about Cardiology services at NeuraCare');switchTab('chat',document.querySelector('.ncp-tab'))">
+        <div class="rc-icon">&#x2764;&#xFE0F;</div>
+        <div class="rc-name">Cardiology</div>
+        <div class="rc-spec">Heart &amp; cardiovascular care</div>
+        <span class="rc-tag">Expert doctors available</span>
+      </div>
+      <div class="ncp-rec-card" onclick="askQ('Tell me about Neurology at NeuraCare');switchTab('chat',document.querySelector('.ncp-tab'))">
+        <div class="rc-icon">&#x1F9E0;</div>
+        <div class="rc-name">Neurology</div>
+        <div class="rc-spec">Brain, spine &amp; nervous system</div>
+        <span class="rc-tag">Online consult available</span>
+      </div>
+      <div class="ncp-rec-card" onclick="askQ('What does the Endocrinology department treat?');switchTab('chat',document.querySelector('.ncp-tab'))">
+        <div class="rc-icon">&#x1F9EA;</div>
+        <div class="rc-name">Endocrinology</div>
+        <div class="rc-spec">Diabetes, thyroid &amp; hormones</div>
+        <span class="rc-tag">Specialist consultation</span>
+      </div>
+      <div class="ncp-rec-card" onclick="askQ('Tell me about Orthopaedics services');switchTab('chat',document.querySelector('.ncp-tab'))">
+        <div class="rc-icon">&#x1F9B4;</div>
+        <div class="rc-name">Orthopaedics</div>
+        <div class="rc-spec">Bones, joints &amp; sports injuries</div>
+        <span class="rc-tag">In-clinic available</span>
+      </div>
+      <div class="ncp-rec-card" onclick="askQ('What dental services does NeuraCare offer?');switchTab('chat',document.querySelector('.ncp-tab'))">
+        <div class="rc-icon">&#x1F9B7;</div>
+        <div class="rc-name">Dental Care</div>
+        <div class="rc-spec">Routine checkups to surgery</div>
+        <span class="rc-tag">Walk-ins welcome</span>
+      </div>
+      <div class="ncp-rec-card" onclick="askQ('Tell me about Paediatrics at NeuraCare');switchTab('chat',document.querySelector('.ncp-tab'))">
+        <div class="rc-icon">&#x1F476;</div>
+        <div class="rc-name">Paediatrics</div>
+        <div class="rc-spec">Child health &amp; development</div>
+        <span class="rc-tag">Family care</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Floating trigger button — custom chatbot icon, hides when panel is open -->
+<button id="nc-chat-btn" onclick="toggleChat()" aria-label="Open NeuraCare Health Assistant">
+  <img src="../Assets/Images/Chatbot-Icon.png" alt="" />
+</button>
+
+<script>
+  const panel   = document.getElementById('nc-panel');
+  const overlay = document.getElementById('nc-blur-overlay');
+  const btn     = document.getElementById('nc-chat-btn');
+  const msgsEl  = document.getElementById('ncp-msgs');
+  const qiEl    = document.getElementById('ncp-qi');
+  const welcome = document.getElementById('ncp-welcome-block');
+  const chips   = document.getElementById('ncp-chips');
+
+  const chatHistory = [];
+  let chatStarted = false;
+
+  function toggleChat(){
+    const isOpen = panel.classList.toggle('open');
+    overlay.classList.toggle('visible', isOpen);
+    btn.classList.toggle('hidden', isOpen); // hide button when open
+  }
+
+  function closeChat(){
+    panel.classList.remove('open');
+    overlay.classList.remove('visible');
+    btn.classList.remove('hidden'); // show button again
+  }
+
+  // click outside (on the blur overlay) closes panel
+  overlay.addEventListener('click', closeChat);
+
+  function switchTab(name, el){
+    document.querySelectorAll('.ncp-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.ncp-tab-pane').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+  }
+
+  function scroll(){ msgsEl.scrollTop = msgsEl.scrollHeight; }
+
+  function addMsg(role, text){
+    if(!chatStarted){
+      welcome.style.display = 'none';
+      chips.style.display = 'none';
+      chatStarted = true;
+    }
+    const d = document.createElement('div');
+    d.className = 'ncm ' + role;
+    if(role === 'bot'){
+      d.innerHTML = `<div class="ncm-av">
+   <img src="../Assets/Images/CMS Logo.png" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+    </div><div class="ncm-bubble">${text}</div>`;
+    } else {
+      d.innerHTML = `<div class="ncm-bubble">${text}</div>`;
+    }
+    msgsEl.appendChild(d);
+    scroll();
+  }
+
+  function showTyping(){
+    const d = document.createElement('div');
+    d.className = 'ncp-typing'; d.id = 'ncp-typing';
+    d.innerHTML = `<div class="ncm-av">
+   <img src="../Assets/Images/CMS Logo.png" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+  </div><div class="ncp-typing-bub">...</div>`;
+    msgsEl.appendChild(d); scroll();
+  }
+  function hideTyping(){ const t=document.getElementById('ncp-typing'); if(t) t.remove(); }
+
+  function askQ(q){
+    if(!panel.classList.contains('open')) toggleChat();
+    qiEl.value = q;
+    ncSend();
+  }
+
+  async function ncSend(){
+  const text = qiEl.value.trim();
+  if(!text) return;
+  qiEl.value = '';
+  addMsg('user', text);
+  chatHistory.push({ role: 'user', parts: [{ text }] });
+  showTyping();
+
+  const sys = `You are a friendly, knowledgeable health assistant for NeuraCare, a multi-specialty clinic management platform in India. NeuraCare specialties: Cardiology, Neurology, Dental Care, Dermatology, Orthopaedics, Paediatrics, Endocrinology, Psychiatry, Urology, Gastroenterology, Pulmonology, Ophthalmology, Rheumatology, Nephrology, Gynaecology, ENT, Diabetology, and more. Answer patient health questions clearly and empathetically in 2-4 sentences. Suggest booking via NeuraCare for personal advice. Do not diagnose. Plain text only, no markdown symbols.`;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ history: chatHistory, system: sys })
+    });
+    const data = await res.json();
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text
+      || 'Sorry, I could not process that. Please try again.';
+    hideTyping();
+    addMsg('bot', reply);
+    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+  } catch(e){
+    hideTyping();
+    addMsg('bot', 'There was a connection issue. Please try again shortly.');
+  }
+}
+</script>

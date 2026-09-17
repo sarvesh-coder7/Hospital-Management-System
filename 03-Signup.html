@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign up - Neuracare</title>
+  <link rel="icon" href="../Assets/Images/CMS Logo.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-dark:   #0e2a20;
+      --green-deep:   #0a1f17;
+      --green-mid:    #234736;
+      --green-accent: #2e7d52;
+      --green-accent-light: #3fb279;
+      --green-btn:    #2a7a50;
+      --green-light:  #e8f5ee;
+      --green-border: #3a7a58;
+      --gold:         #d8b25e;
+      --white:        #ffffff;
+      --gray-bg:      #eef2ef;
+      --gray-text:    #6b7280;
+      --gray-border:  #d1d5db;
+      --text-dark:    #111827;
+    }
+
+    body {
+      position: relative;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background: var(--gray-bg);
+      overflow-x: hidden;
+    }
+
+    /* ambient background glow — decorative only */
+
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+    }
+
+    body::before {
+      width: 520px; 
+      height: 520px;
+      top: -180px; 
+      right: -140px;
+      background: radial-gradient(circle, rgba(46,125,82,0.28), transparent 70%);
+    }
+
+    body::after {
+      width: 420px; 
+      height: 420px;
+      bottom: -160px; 
+      right: 16%;
+      background: radial-gradient(circle, rgba(216,178,94,0.16), transparent 70%);
+    }
+
+    /* ── LEFT PANEL ── */
+
+    .left-panel {
+      width: 340px;
+      min-height: 100vh;
+      background:
+
+        radial-gradient(620px 420px at 85% -10%, rgba(63,178,121,0.30), transparent 60%),
+        radial-gradient(520px 380px at -10% 110%, rgba(216,178,94,0.14), transparent 55%),
+        linear-gradient(165deg, var(--green-deep) 0%, var(--green-dark) 55%, #11301f 100%);
+
+      display: flex;
+      flex-direction: column;
+      padding: 32px 28px 40px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      z-index: 1;
+      box-shadow: 6px 0 30px rgba(0,0,0,0.18);
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      width: 280px; height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(63,178,121,0.22) 0%, transparent 70%);
+      top: -70px; right: -70px;
+    }
+
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(216,178,94,0.12) 0%, transparent 70%);
+      bottom: -60px; left: -60px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-icon img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 6px 16px rgba(0,0,0,0.35);
+    }
+
+    .logo-text h1 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: #e0f0e8;
+      letter-spacing: 0.01em;
+    }
+
+    .logo-text p {
+      font-size: 9px;
+      color: var(--gold);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .hero-illo {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 14px 26px rgba(0,0,0,0.35));
+    }
+
+    .hero-illo svg { 
+      width: 160px; 
+      height: 160px; 
+      animation: float 5.5s ease-in-out infinite; 
+    }
+
+    .stats {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .stat-item:hover { 
+      background: rgba(255,255,255,0.05); 
+      transform: translateX(2px); 
+    }
+
+    .stat-icon {
+      width: 36px; 
+      height: 36px;
+      background: rgba(63,178,121,0.22);
+      border: 1px solid rgba(106,171,133,0.30);
+      border-radius: 8px;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(63,178,121,0.18);
+    }
+
+    .stat-icon svg { 
+      width: 18px; 
+      height: 18px; 
+    }
+
+    .stat-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .stat-text span {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .panel-footer {
+      margin-top: 28px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── RIGHT PANEL ── */
+
+    .right-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      position: relative;
+      z-index: 1;
+      background:
+        radial-gradient(900px 500px at 90% -10%, rgba(46,125,82,0.10), transparent 60%),
+        radial-gradient(700px 500px at 10% 110%, rgba(216,178,94,0.08), transparent 60%);
+    }
+
+    .card {
+      position: relative;
+      background: var(--white);
+      border-radius: 20px;
+      padding: 44px 48px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.6) inset,
+        0 18px 50px rgba(14,42,32,0.14),
+        0 4px 14px rgba(14,42,32,0.08);
+      border: 1px solid rgba(14,42,32,0.05);
+      animation: card-in 0.5s ease both;
+      overflow: hidden;
+    }
+    .card::before{
+      content:'';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--green-accent-light), var(--gold), var(--green-accent-light));
+      background-size: 200% 100%;
+      animation: sheen-move 5s linear infinite;
+    }
+
+    .card-header { margin-bottom: 28px; }
+    .card-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 29px;
+      margin-bottom: 6px;
+      background: linear-gradient(100deg, var(--green-deep) 20%, var(--green-accent) 55%, var(--gold) 110%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .card-header p {
+      font-size: 13.5px;
+      color: var(--gray-text);
+    }
+
+    /* form */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      margin-bottom: 7px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-wrap svg {
+      position: absolute;
+      left: 13px;
+      width: 16px; height: 16px;
+      color: #9ca3af;
+      pointer-events: none;
+      transition: color 0.18s ease;
+    }
+    .input-wrap:focus-within svg { color: var(--green-accent); }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 11px 13px 11px 38px;
+      border: 1.5px solid var(--gray-border);
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      appearance: none;
+    }
+    input:hover, select:hover { border-color: #b9c0cc; }
+    input[type="password"],
+    input[type="text"].has-toggle {
+      padding-right: 42px;
+    }
+    input:focus, select:focus {
+      border-color: var(--green-accent);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(46,125,82,0.12);
+    }
+    input::placeholder { color: #b0b7c3; }
+
+    .select-wrap svg.chevron {
+      right: 12px; left: auto;
+      pointer-events: none;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 40px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border-radius: 0 8px 8px 0;
+      z-index: 2;
+      transition: color 0.15s ease;
+    }
+    .toggle-pw:hover { color: var(--green-accent); }
+    .toggle-pw svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #f0f2f0;
+      margin: 4px 0 18px;
+    }
+
+    .terms {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .terms input[type="checkbox"] {
+      margin-top: 2px;
+      width: 15px; height: 15px;
+      accent-color: var(--green-accent);
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .terms label {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--gray-text);
+      margin: 0;
+      line-height: 1.5;
+    }
+    .terms label a { color: var(--green-accent); text-decoration: none; }
+    .terms label a:hover { text-decoration: underline; }
+
+    /* Submit button — the glow */
+    .btn-submit {
+      position: relative;
+      width: 100%;
+      padding: 15px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--green-accent-light), var(--green-btn) 45%, var(--green-mid));
+      background-size: 180% 180%;
+      transition: transform 0.15s ease, box-shadow 0.25s ease;
+      animation: glow-pulse 2.4s ease-in-out infinite, drift-gradient 6s ease infinite;
+    }
+    .btn-submit::after{
+      content:'';
+      position: absolute;
+      top: 0; left: -75%;
+      width: 45%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.6s ease;
+    }
+    .btn-submit:hover {
+      box-shadow: 0 0 0 6px rgba(46,125,82,0.12), 0 10px 26px rgba(35,95,63,0.45);
+      transform: translateY(-1px);
+    }
+    .btn-submit:hover::after{ left: 130%; }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.75; cursor: progress; animation: none; }
+    .btn-submit svg { width: 18px; height: 18px; }
+
+    .card-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--gray-text);
+    }
+    .card-footer a {
+      color: var(--green-accent);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    .card-footer a:hover { text-decoration: underline; color: var(--green-mid); }
+
+    @media (max-width: 768px) {
+      .left-panel { display: none; }
+      .card { padding: 32px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+/* ── SUCCESS MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(8,20,15,0.62);
+  backdrop-filter: blur(6px);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+
+.modal {
+  position: relative;
+  background: #fff;
+  border-radius: 24px;
+  padding: 48px 44px 40px;
+  width: 92%; max-width: 440px;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.30);
+  animation: popIn 0.35s cubic-bezier(.34,1.56,.64,1) both;
+  overflow: hidden;
+}
+.modal::before {
+  content:'';
+  position: absolute; top:0; left:0; right:0; height:5px;
+  background: linear-gradient(90deg, #3fb279, #d8b25e, #3fb279);
+  background-size: 200% 100%;
+  animation: sheen-move 5s linear infinite;
+}
+.modal-ambient-tr {
+  position:absolute; top:-60px; right:-60px;
+  width:180px; height:180px; border-radius:50%;
+  background: radial-gradient(circle, rgba(63,178,121,0.18), transparent 70%);
+  pointer-events:none;
+}
+.modal-ambient-bl {
+  position:absolute; bottom:-50px; left:-50px;
+  width:140px; height:140px; border-radius:50%;
+  background: radial-gradient(circle, rgba(216,178,94,0.12), transparent 70%);
+  pointer-events:none;
+}
+.modal-icon {
+  width:76px; height:76px; border-radius:50%;
+  background: #e8f5ee;
+  border: 2px solid rgba(46,125,82,0.18);
+  display:flex; align-items:center; justify-content:center;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 0 10px rgba(46,125,82,0.07);
+}
+.modal-icon svg { width:36px; height:36px; color:#2e7d52; }
+.modal h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  margin-bottom: 6px;
+  background: linear-gradient(100deg, #0a1f17 20%, #2e7d52 55%, #d8b25e 110%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.modal .modal-sub {
+  font-size: 13.5px; color: #6b7280;
+  margin-bottom: 28px; line-height: 1.6;
+}
+.id-box {
+  background: linear-gradient(135deg, #e8f5ee 0%, #f0faf4 100%);
+  border: 1.5px solid rgba(46,125,82,0.25);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 0 0 4px rgba(46,125,82,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+  text-align: left;
+}
+.id-box-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #2e7d52;
+  margin-bottom: 5px;
+}
+.id-box-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #0a1f17;
+  letter-spacing: 3px;
+}
+.copy-btn {
+  background: #2e7d52; border: none; border-radius: 10px;
+  padding: 10px 14px; cursor: pointer; color: white;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif;
+  flex-shrink: 0; transition: background 0.15s, transform 0.15s;
+}
+.copy-btn:hover { background: #234736; transform: translateY(-1px); }
+.copy-btn svg { width:14px; height:14px; }
+.modal-warn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fffbeb;
+  border: 1px solid rgba(217,119,6,0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+.modal-warn svg { flex-shrink: 0; width: 15px; height: 15px; }
+.modal-warn span { font-size: 12px; color: #92400e; line-height: 1.5; }
+.btn-go {
+  width: 100%; padding: 15px;
+  background: linear-gradient(135deg, #3fb279, #2a7a50 45%, #234736);
+  color: white; font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 600; border: none;
+  border-radius: 11px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.btn-go:hover { box-shadow: 0 8px 24px rgba(35,95,63,0.42); transform: translateY(-1px); }
+.btn-go:active { transform: scale(0.99); }
+
+    /* ── Toast ── */
+    .toast-error   { border-left-color: #dc2626 !important; }
+    .toast-error   #toast-icon { background: #fef2f2 !important; }
+    .toast-error   #toast-svg  { stroke: #dc2626 !important; }
+    .toast-success { border-left-color: #2e7d52 !important; }
+    .toast-success #toast-icon { background: #e8f5ee !important; }
+    .toast-success #toast-svg  { stroke: #2e7d52 !important; }
+    .toast-warning { border-left-color: #d97706 !important; }
+    .toast-warning #toast-icon { background: #fffbeb !important; }
+    .toast-warning #toast-svg  { stroke: #d97706 !important; }
+
+    .upload-wrap {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px dashed var(--gray-border);
+      border-radius: 8px;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+      font-size: 13.5px;
+      color: var(--gray-text);
+      font-family: 'Inter', sans-serif;
+    }
+    .upload-wrap:hover {
+      border-color: var(--green-accent);
+      background: var(--green-light);
+      color: var(--green-accent);
+      box-shadow: 0 0 0 4px rgba(46,125,82,0.08);
+    }
+
+    .upload-wrap:hover svg { 
+      stroke: var(--green-accent); 
+    }
+
+    /* ── Image Preview ── */
+    #patientPreview {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-top: 10px;
+      border: 2px solid var(--green-accent);
+      display: block;
+    }
+
+    /* keyframes */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes sheen-move {
+      0% { background-position: 0% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes drift-gradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes glow-pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(46,125,82,0.45), 0 8px 18px rgba(35,95,63,0.30);
+      }
+      50% {
+        box-shadow: 0 0 0 9px rgba(46,125,82,0), 0 10px 26px rgba(35,95,63,0.45);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-illo svg, .card, .modal, .btn-submit, .modal-icon, .card::before, .modal::before { animation: none !important; }
+      .btn-submit:hover { box-shadow: 0 10px 26px rgba(35,95,63,0.45); }
+    }
+
+    .google-btn:hover {
+      border-color: #2e7d52 !important;
+      box-shadow: 0 0 0 4px rgba(46,125,82,0.08) !important;
+      background: #f9fafb !important;
+}
+  </style>
+</head>
+<body>
+
+  <!-- Toast -->
+  <div id="toast" style="
+    position:fixed; top:-80px; left:50%; transform:translateX(-50%);
+    background:#fff; border-radius:12px; padding:14px 20px;
+    display:flex; align-items:center; gap:12px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.13); z-index:9999;
+    min-width:320px; max-width:480px; border-left:4px solid #2e7d52;
+    transition:top 0.4s cubic-bezier(.34,1.56,.64,1);">
+    <div id="toast-icon" style="width:34px;height:34px;border-radius:50%;background:#e8f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg id="toast-svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+        stroke="#2e7d52" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div style="flex:1;">
+      <div id="toast-title" style="font-size:13px;font-weight:600;color:#111827;margin-bottom:2px;"></div>
+      <div id="toast-msg"   style="font-size:12px;color:#6b7280;line-height:1.4;"></div>
+    </div>
+    <button onclick="closeToast()" style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:18px;line-height:1;padding:0 2px;">✕</button>
+  </div>
+
+  <!-- LEFT PANEL -->
+  <aside class="left-panel">
+    <div class="logo">
+      <div class="logo-icon">
+        <img src="../Assets/Images/CMS Logo.png" alt="NeuraCare Logo">
+      </div>
+      <div class="logo-text">
+        <h1>NeuraCare</h1>
+        <p>Clinic Management</p>
+      </div>
+    </div>
+
+    <div class="hero-illo">
+      <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="80" cy="80" r="70" fill="rgba(46,125,82,0.12)"/>
+        <circle cx="80" cy="58" r="22" fill="#2e7d52"/>
+        <circle cx="80" cy="46" r="13" fill="#3a9464"/>
+        <path d="M58 80 Q58 72 80 72 Q102 72 102 80 L106 110 H54 Z" fill="#2e7d52"/>
+        <rect x="77" y="82" width="6" height="18" rx="2" fill="rgba(255,255,255,0.8)"/>
+        <rect x="71" y="88" width="18" height="6" rx="2" fill="rgba(255,255,255,0.8)"/>
+        <path d="M68 78 Q62 90 66 96 Q70 102 76 98" stroke="#1a3028" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <circle cx="76" cy="98" r="3" fill="#1a3028"/>
+        <circle cx="106" cy="60" r="12" fill="#3a9464" stroke="#1a3028" stroke-width="2"/>
+        <rect x="103" y="55" width="6" height="10" rx="1.5" fill="white"/>
+        <rect x="101" y="57" width="10" height="6" rx="1.5" fill="white"/>
+        <polyline points="20,125 38,125 44,112 50,138 58,118 64,125 140,125" stroke="#2e7d52" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3a9464" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-text">
+          <strong>50,000+ Patients</strong>
+          <span>Trusted by our community</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3a9464" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="stat-text">
+          <strong>120+ Expert Doctors</strong>
+          <span>Across all specialties</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3a9464" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="stat-text">
+          <strong>20+ Years of Service</strong>
+          <span>Proven healthcare excellence</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="panel-footer">Trusted healthcare services with experienced doctors. Manage appointments, records, and patient care in one secure platform.</p>
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <main class="right-panel">
+    <div class="card">
+      <div class="card-header">
+  <h2>Create your account</h2>
+  <p>Join NeuraCare to access your healthcare dashboard</p>
+</div>
+
+<!-- Google Button -->
+<a href="/api/auth/google" class="google-btn" style="  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 12px;
+  background: #fff; border: 1.5px solid #d1d5db; border-radius: 10px;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  color: #111827; text-decoration: none; margin-bottom: 20px;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;">
+  <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+  Continue with Google
+</a>
+
+<!-- Divider -->
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+  <div style="flex:1;height:1px;background:#e5e7eb;"></div>
+  <span style="font-size:12px;color:#9ca3af;font-weight:500;">or sign up with email</span>
+  <div style="flex:1;height:1px;background:#e5e7eb;"></div>
+</div>
+
+      <!-- Patient Form -->
+      <div id="patient-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="pat-firstname" placeholder="Jane" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="pat-lastname" placeholder="Doe" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date of Birth</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <input type="date" id="pat-dob" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.36 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <input type="tel" id="pat-phone" placeholder="+91 98765 43210" pattern="[0-9+\s\-]+" inputmode="numeric" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group full">
+  <label>Gender</label>
+  <div class="input-wrap select-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/>
+      <path d="M12 12v10M9 19h6"/>
+    </svg>
+    <select id="pat-gender">
+      <option value="" disabled selected>Select gender</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+      <option>Prefer not to say</option>
+    </select>
+    <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="pat-email" placeholder="patient@email.com" />
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label>Blood Group</label>
+          <div class="input-wrap select-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2C6 10 4 14 4 16a8 8 0 0 0 16 0c0-2-2-6-8-14z"/>
+            </svg>
+            <select id="pat-bloodgroup">
+              <option value="" disabled selected>Select blood group</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label>Patient Photo</label>
+          <div class="upload-wrap" onclick="document.getElementById('patientImage').click()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <span id="upload-label">Click to upload photo <span style="color:#9ca3af;font-weight:400;">(optional)</span></span>
+            <input type="file" id="patientImage" accept="image/*"
+              onchange="previewImage(this,'patientPreview')" style="display:none;">
+          </div>
+
+          <img id="patientPreview" class="image-preview" alt="Patient Photo Preview" style="display:none;">        
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="text" id="pw3" placeholder="Enter password" />
+              <button class="toggle-pw" onclick="togglePw('pw3', this)" type="button"></button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="text" id="pw4" placeholder="Confirm password" />
+              <button class="toggle-pw" onclick="togglePw('pw4', this)" type="button"></button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /patient-form -->
+
+      <hr class="divider" />
+
+      <div class="terms">
+        <input type="checkbox" id="agree" />
+        <label for="agree">I agree to NeuraCare's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, including the handling of my health information.</label>
+      </div>
+
+      <button class="btn-submit">
+        Create account
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+
+      <p class="card-footer">Already have an account? <a href="02-Login.html">Sign in</a></p>
+    </div>
+  </main>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div style="position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(63,178,121,0.18),transparent 70%);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-50px;left:-50px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(216,178,94,0.12),transparent 70%);pointer-events:none;"></div>
+
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+
+    <h3>Account Created!</h3>
+    <p class="modal-sub">Welcome to NeuraCare. Your account is ready.<br>Save your Patient ID — you'll need it to sign in.</p>
+
+    <div class="id-box">
+      <div>
+        <div class="id-box-label">Patient ID</div>
+        <div class="id-box-value" id="modalIdValue">PAT1042</div>
+      </div>
+      <button class="copy-btn" onclick="copyId()" title="Copy ID">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+    </div>
+
+    <div class="modal-warn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>Please save this ID — you will use it to sign in every time.</span>
+    </div>
+
+    <button class="btn-go" onclick="closeModal()">
+      Go to Sign In
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+  </div>
+</div>
+  <script>
+    // ── Toast ──
+    let toastTimer = null;
+
+    function showToast(title, message, type = 'error') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-title').textContent = title;
+      document.getElementById('toast-msg').textContent   = message;
+      toast.className = 'toast-' + type;
+      const icons = {
+        error:   `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
+        success: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,
+        warning: `<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`
+      };
+      document.getElementById('toast-svg').innerHTML = icons[type] || icons.error;
+      toast.style.top = '24px';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => closeToast(), 4000);
+    }
+
+    function closeToast() {
+      document.getElementById('toast').style.top = '-80px';
+    }
+
+    // ── Eye icons ──
+    const EYE_OPEN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const EYE_HIDE = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+    window.onload = function () {
+      document.querySelectorAll('.toggle-pw').forEach(btn => btn.innerHTML = EYE_OPEN);
+    };
+
+    function togglePw(id, btn) {
+      const inp = document.getElementById(id);
+      if (inp.type === 'text') {
+        inp.type = 'password';
+        btn.innerHTML = EYE_HIDE;
+      } else {
+        inp.type = 'text';
+        btn.innerHTML = EYE_OPEN;
+      }
+    }
+
+    // ── Image preview ──
+    function previewImage(input, previewId) {
+      const preview = document.getElementById(previewId);
+      const file = input.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+        const label = document.getElementById('upload-label');
+        if (label) label.innerHTML = '✓ <strong>' + file.name + '</strong>';
+      }
+    }
+
+    // ── Fallback ID generator ──
+    function getNextId() {
+      const current = parseInt(localStorage.getItem('neura_pat_counter') || '1000', 10);
+      const next = current + 1;
+      localStorage.setItem('neura_pat_counter', next);
+      return 'PAT' + next;
+    }
+
+    // ── Submit ──
+    document.querySelector('.btn-submit').addEventListener('click', async function () {
+
+      if (!document.getElementById('agree').checked) {
+        showToast('Terms Required', 'Please agree to the Terms of Service before continuing.', 'warning');
+        return;
+      }
+
+      const firstName  = document.getElementById('pat-firstname').value.trim();
+      const lastName   = document.getElementById('pat-lastname').value.trim();
+      const dob        = document.getElementById('pat-dob').value;
+      const phone      = document.getElementById('pat-phone').value.trim();
+      const email      = document.getElementById('pat-email').value.trim();
+      const bloodGroup = document.getElementById('pat-bloodgroup').value;
+      const gender = document.getElementById('pat-gender').value;
+      const password   = document.getElementById('pw3').value;
+      const confirm    = document.getElementById('pw4').value;
+
+      if (!firstName || !lastName || !email || !password || !phone || !dob) {
+        showToast('Missing Fields', 'Please fill in all required fields.', 'error');
+        return;
+      }
+      if (!bloodGroup) {
+        showToast('Blood Group Required', 'Please select your blood group.', 'error');
+        return;
+      }
+      if (password !== confirm) {
+        showToast('Password Mismatch', 'Your passwords do not match. Please re-enter.', 'error');
+        return;
+      }
+      if (password.length < 6) {
+        showToast('Weak Password', 'Password must be at least 6 characters long.', 'warning');
+        return;
+      }
+
+      if (!gender) {
+         showToast('Gender Required', 'Please select your gender.', 'error');
+         return;
+      }
+
+      this.disabled = true;
+      this.textContent = 'Creating account...';
+
+      try {
+        const formData = new FormData();
+        formData.append('role',       'patient');
+        formData.append('firstName',  firstName);
+        formData.append('lastName',   lastName);
+        formData.append('dob',        dob);
+        formData.append('phone',      phone);
+        formData.append('email',      email);
+        formData.append('password',   password);
+        formData.append('bloodGroup', bloodGroup);
+        formData.append('gender',     gender);
+
+        const imageFile = document.getElementById('patientImage')?.files[0];
+        if (imageFile) formData.append('profileImage', imageFile);
+
+      const response = await fetch('/api/auth/Signup', {        
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showToast('Signup Failed', data.message || 'Signup failed. Please try again.', 'error');
+          this.disabled = false;
+          this.innerHTML = 'Create account <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+          return;
+        }
+
+        const generatedId = data.userId || getNextId();
+        document.getElementById('modalIdValue').textContent = generatedId;
+        document.getElementById('successModal').classList.add('show');
+
+      } catch (err) {
+        console.error(err);
+        showToast('Server Error', 'Cannot connect to server. Make sure node server.js is running!', 'error');
+        this.disabled = false;
+        this.innerHTML = 'Create account <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+      }
+    });
+
+    // ── Modal ──
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('show');
+      window.location.href = '02-Login.html';
+    }
+
+    function copyId() {
+      const val = document.getElementById('modalIdValue').textContent;
+      navigator.clipboard.writeText(val).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+        setTimeout(() => {
+          btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+        }, 1800);
+      });
+    }
+
+    document.getElementById('successModal').addEventListener('click', function (e) {
+      if (e.target === this) closeModal();
+    });
+  </script>
+</body>
+</html>

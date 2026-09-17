@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign in - Neuracare</title>
+<link rel="icon" href="../Assets/Images/CMS Logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root{
+    --ink: #0f241a;
+    --green-900: #0c2a1c;
+    --green-800: #123c27;
+    --green-700: #1b3a2d;
+    --green-600: #1f6f45;
+    --green-500: #2E8B57;
+    --green-400: #3fb279;
+    --green-300: #6aab85;
+    --mint-100: #e0f0e8;
+    --mint-050: #f0faf4;
+    --gold-400: #d8b25e;
+    --bg-soft: #eef3ee;
+  }
+
+  body {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    background: var(--bg-soft);
+    font-family: 'DM Sans', sans-serif;
+    color: #333;
+    overflow: hidden;
+  }
+
+  body::before, body::after{
+    content:'';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+  }
+  body::before{
+    width: 520px; height: 520px;
+    top: -160px; right: -120px;
+    background: radial-gradient(circle, rgba(46,139,87,0.30), transparent 70%);
+  }
+  body::after{
+    width: 420px; height: 420px;
+    bottom: -140px; right: 18%;
+    background: radial-gradient(circle, rgba(216,178,94,0.18), transparent 70%);
+  }
+
+  .left {
+    position: relative;
+    width: 340px;
+    min-height: 100vh;
+    background:
+      radial-gradient(620px 420px at 85% -10%, rgba(63,178,121,0.30), transparent 60%),
+      radial-gradient(520px 380px at -10% 110%, rgba(216,178,94,0.14), transparent 55%),
+      linear-gradient(165deg, var(--green-900) 0%, var(--green-700) 55%, #143524 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 2.2rem 2rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1;
+    box-shadow: 6px 0 30px rgba(0,0,0,0.18);
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+  .logo-row img {
+    width: 50px; height: 50px;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 6px 16px rgba(0,0,0,0.35);
+  }
+  .logo-text .brand{
+    font-family: 'DM Sans', sans-serif;
+    font-size: 20px; font-weight: 500;
+    color: var(--mint-100);
+    letter-spacing: 0.01em;
+  }
+  .logo-text .tagline{
+    font-size: 9px;
+    color: var(--gold-400);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .illus {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0;
+    filter: drop-shadow(0 14px 26px rgba(0,0,0,0.35));
+  }
+  .illus svg { animation: float 5.5s ease-in-out infinite; }
+
+  .trust { margin-top: auto; }
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 4px;
+    border-top: 0.5px solid rgba(255,255,255,0.09);
+    border-radius: 10px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .trust-item:hover{ background: rgba(255,255,255,0.04); transform: translateX(2px); }
+  .trust-item:last-child { border-bottom: 0.5px solid rgba(255,255,255,0.09); }
+  .trust-icon {
+    width: 36px; height: 36px;
+    background: rgba(63,178,121,0.20);
+    border: 1px solid rgba(106,171,133,0.30);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--green-400);
+    box-shadow: 0 0 14px rgba(63,178,121,0.18);
+  }
+  .trust-num { font-size: 14px; font-weight: 500; color: var(--mint-100); }
+  .trust-lbl { font-size: 11px; color: var(--green-300); margin-top: 1px; }
+  .desc {
+    margin-top: 1.4rem;
+    font-size: 11.5px;
+    color: #538a6a;
+    line-height: 1.8;
+  }
+
+  .right {
+    position: relative;
+    width: 75%;
+    min-height: 100vh;
+    background:
+      radial-gradient(900px 500px at 90% -10%, rgba(46,139,87,0.10), transparent 60%),
+      radial-gradient(700px 500px at 10% 110%, rgba(216,178,94,0.08), transparent 60%),
+      #eef3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow-y: auto;
+    z-index: 1;
+  }
+
+  .card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 2.6rem 2.3rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 18px 50px rgba(15,42,29,0.14),
+      0 4px 14px rgba(15,42,29,0.08);
+    border: 1px solid rgba(15,42,29,0.05);
+    animation: card-in 0.5s ease both;
+    overflow: hidden;
+  }
+  .card::before{
+    content:'';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--green-500), var(--gold-400), var(--green-500));
+    background-size: 200% 100%;
+    animation: sheen-move 5s linear infinite;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 29px; font-weight: 700;
+    margin-bottom: 6px;
+    background: linear-gradient(100deg, var(--green-900) 20%, var(--green-600) 55%, var(--gold-400) 110%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .card-sub {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 1.4rem;
+  }
+
+  /* ── Google Button ── */
+  .btn-google {
+    width: 100%;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    text-decoration: none;
+    margin-bottom: 1.2rem;
+  }
+  .btn-google:hover {
+    border-color: #4285f4;
+    background: #f8f9ff;
+    box-shadow: 0 2px 12px rgba(66,133,244,0.15);
+  }
+
+  /* ── Divider ── */
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.2rem;
+    color: #bbb;
+    font-size: 12px;
+  }
+  .or-divider::before, .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e8e8e8;
+  }
+
+  .field { margin-bottom: 1.2rem; }
+  .field label {
+    display: block;
+    font-size: 11px; font-weight: 600;
+    color: #777;
+    margin-bottom: 6px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .fi-wrap { position: relative; }
+  .fi-wrap .fi-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: #bbb;
+    pointer-events: none;
+    display: flex;
+    transition: color 0.15s ease;
+  }
+  .field input {
+    width: 100%;
+    height: 46px;
+    border: 1.5px solid #e4e4e4;
+    border-radius: 9px;
+    padding: 0 14px 0 42px;
+    font-size: 14px;
+    background: #fafafa;
+    color: #333;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .field input:focus {
+    border-color: var(--green-500);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(46,139,87,0.13);
+  }
+  .fi-wrap:has(input:focus) .fi-icon { color: var(--green-500); }
+
+  .btn-signin {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px; font-weight: 600;
+    letter-spacing: 0.01em;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 0.3rem;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--green-400), var(--green-500) 45%, var(--green-600));
+    background-size: 180% 180%;
+    transition: transform 0.15s ease, box-shadow 0.25s ease;
+    animation: glow-pulse 2.4s ease-in-out infinite, drift-gradient 6s ease infinite;
+  }
+  .btn-signin::after{
+    content:'';
+    position: absolute;
+    top: 0; left: -75%;
+    width: 45%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+  }
+  .btn-signin:hover {
+    box-shadow: 0 0 0 6px rgba(46,139,87,0.12), 0 10px 26px rgba(31,111,69,0.45);
+    transform: translateY(-1px);
+  }
+  .btn-signin:hover::after{ left: 130%; }
+  .btn-signin:active { transform: scale(0.98); }
+  .btn-signin:disabled{ opacity: 0.75; cursor: progress; animation: none; }
+
+  .links-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.1rem;
+  }
+  .link-txt {
+    font-size: 14.5px;
+    color: var(--green-500);
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+  .link-txt:hover { color: var(--green-600); text-decoration: underline; }
+
+  /* ── Toast (same as signup) ── */
+  .toast-error   { border-left-color: #dc2626 !important; }
+  .toast-error   #toast-icon { background: #fef2f2 !important; }
+  .toast-error   #toast-svg  { stroke: #dc2626 !important; }
+  .toast-success { border-left-color: #2e7d52 !important; }
+  .toast-success #toast-icon { background: #e8f5ee !important; }
+  .toast-success #toast-svg  { stroke: #2e7d52 !important; }
+  .toast-warning { border-left-color: #d97706 !important; }
+  .toast-warning #toast-icon { background: #fffbeb !important; }
+  .toast-warning #toast-svg  { stroke: #d97706 !important; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes sheen-move {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes drift-gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(46,139,87,0.45), 0 8px 18px rgba(31,111,69,0.30); }
+    50%       { box-shadow: 0 0 0 9px rgba(46,139,87,0), 0 10px 26px rgba(31,111,69,0.45); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .illus svg, .card, .btn-signin, .card::before { animation: none !important; }
+  }
+  @media (max-width: 768px) {
+    body { flex-direction: column; height: auto; overflow: auto; }
+    .left, .right { width: 100%; min-height: unset; }
+    .illus { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Toast Notification -->
+<div id="toast" style="
+  position:fixed; top:-80px; left:50%; transform:translateX(-50%);
+  background:#fff; border-radius:12px; padding:14px 20px;
+  display:flex; align-items:center; gap:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.13); z-index:9999;
+  min-width:320px; max-width:480px; border-left:4px solid #2e7d52;
+  transition:top 0.4s cubic-bezier(.34,1.56,.64,1);">
+  <div id="toast-icon" style="width:34px;height:34px;border-radius:50%;background:#e8f5ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+    <svg id="toast-svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+      stroke="#2e7d52" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  </div>
+  <div style="flex:1;">
+    <div id="toast-title" style="font-size:13px;font-weight:600;color:#111827;margin-bottom:2px;"></div>
+    <div id="toast-msg"   style="font-size:12px;color:#6b7280;line-height:1.4;"></div>
+  </div>
+  <button onclick="closeToast()" style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:18px;line-height:1;padding:0 2px;">✕</button>
+</div>
+
+<!-- LEFT PANEL -->
+<div class="left">
+  <div class="logo-row">
+    <img src="../Assets/Images/CMS Logo.png" alt="NeuraCare Logo">
+    <div class="logo-text">
+      <div class="brand">NeuraCare</div>
+      <div class="tagline">Clinic Management</div>
+    </div>
+  </div>
+
+  <div class="illus">
+    <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="88" r="56" fill="#3fb279" opacity="0.10"/>
+      <circle cx="100" cy="88" r="40" fill="#3fb279" opacity="0.16"/>
+      <circle cx="100" cy="74" r="22" fill="#4aab77"/>
+      <ellipse cx="100" cy="69" rx="12" ry="14" fill="#e0f0e8"/>
+      <ellipse cx="100" cy="63" rx="8" ry="6" fill="#4aab77"/>
+      <rect x="68" y="108" width="64" height="56" rx="16" fill="#1c5c3a"/>
+      <rect x="74" y="113" width="52" height="46" rx="12" fill="#2E8B57" opacity="0.8"/>
+      <rect x="88" y="99" width="24" height="16" rx="6" fill="#3a8f65"/>
+      <rect x="90" y="127" width="20" height="4" rx="2" fill="#e0f0e8"/>
+      <rect x="98" y="119" width="4" height="18" rx="2" fill="#e0f0e8"/>
+      <circle cx="148" cy="60" r="22" fill="#163d27"/>
+      <rect x="139" y="58" width="18" height="5" rx="2.5" fill="#3fb279"/>
+      <rect x="145.5" y="51" width="5" height="18" rx="2.5" fill="#3fb279"/>
+      <circle cx="52" cy="110" r="18" fill="#163d27"/>
+      <polyline points="43,110 47,110 50,102 55,118 58,110 61,110" stroke="#4aab77" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <ellipse cx="100" cy="168" rx="50" ry="6" fill="#000000" opacity="0.18"/>
+    </svg>
+  </div>
+
+  <div class="trust">
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <div class="trust-num">50,000+ Patients</div>
+        <div class="trust-lbl">Trusted by our community</div>
+      </div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/><path d="M12 12v4"/><path d="M10 16h4"/></svg>
+      </div>
+      <div>
+        <div class="trust-num">120+ Expert Doctors</div>
+        <div class="trust-lbl">Across all specialties</div>
+      </div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      </div>
+      <div>
+        <div class="trust-num">20+ Years of Service</div>
+        <div class="trust-lbl">Proven healthcare excellence</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="desc">Trusted healthcare services with experienced doctors. Manage appointments, records, and patient care in one secure platform.</p>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right">
+  <div class="card">
+    <div class="card-title">Welcome back</div>
+    <div class="card-sub">Sign in to access your healthcare dashboard</div>
+
+    <!-- Google Button -->
+    <a href="/api/auth/google" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        <path fill="none" d="M0 0h48v48H0z"/>
+      </svg>
+      Continue with Google
+    </a>
+
+    <div class="or-divider">or sign in with credentials</div>
+
+    <div id="form-area"></div>
+
+    <button class="btn-signin" onclick="handleLogin()">
+      Sign in &nbsp;
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+    </button>
+
+    <div class="links-row">
+      <a href="#" class="link-txt">Forgot password?</a>
+      <a href="03-Signup.html" class="link-txt">Create new account</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const iID   = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>';
+  const iUser = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  const iLock = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+
+  // ── Toast ──
+  let toastTimer = null;
+
+  function showToast(title, message, type = 'error') {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-title').textContent = title;
+    document.getElementById('toast-msg').textContent   = message;
+    toast.className = 'toast-' + type;
+    const icons = {
+      error:   `<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>`,
+      success: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,
+      warning: `<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`
+    };
+    document.getElementById('toast-svg').innerHTML = icons[type] || icons.error;
+    toast.style.top = '24px';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => closeToast(), 4000);
+  }
+
+  function closeToast() {
+    document.getElementById('toast').style.top = '-80px';
+  }
+
+  let currentType = 'patient';
+
+  function mkField(id, label, type, ph, icon) {
+    return `<div class="field">
+      <label>${label}</label>
+      <div class="fi-wrap">
+        <span class="fi-icon">${icon}</span>
+        <input id="${id}" type="${type}" placeholder="${ph}" />
+      </div>
+    </div>`;
+  }
+
+  const forms = {
+    patient: mkField('login-id',       'Patient ID',   'text',     'PAT1001',  iID)
+           + mkField('login-name',     'Patient Name', 'text',     'Jane Doe', iUser)
+           + mkField('login-password', 'Password',     'password', '••••••••', iLock)
+  };
+
+  function setType(t) {
+    currentType = t;
+    document.getElementById('form-area').innerHTML = forms[t];
+  }
+
+  async function handleLogin() {
+    const userId   = document.getElementById('login-id')?.value.trim();
+    const password = document.getElementById('login-password')?.value;
+    const name     = document.getElementById('login-name')?.value.trim() || null;
+
+    // ── Validation with toasts ──
+    if (!userId) {
+      showToast('Patient ID Required', 'Please enter your Patient ID to continue.', 'error');
+      return;
+    }
+    if (!name) {
+      showToast('Name Required', 'Please enter your full name as registered.', 'error');
+      return;
+    }
+    if (!password) {
+      showToast('Password Required', 'Please enter your password to sign in.', 'error');
+      return;
+    }
+
+    const btn = document.querySelector('.btn-signin');
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: currentType, userId, password, name })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast('Sign In Failed', data.message || 'Login failed. Please try again.', 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Sign in &nbsp;<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>';
+        return;
+      }
+
+      sessionStorage.setItem('neura_user', JSON.stringify({
+        userId:       data.userId,
+        role:         data.role,
+        firstName:    data.firstName,
+        lastName:     data.lastName,
+        specialty:    data.specialty,
+        dob:          data.dob,
+        gender:       data.gender,
+        bloodGroup:   data.bloodGroup,
+        profileImage: data.profileImage
+      }));
+
+      showToast('Welcome back!', `Signed in as ${data.firstName} ${data.lastName}`, 'success');
+      setTimeout(() => { window.location.href = '05-Patient-dashboard.html'; }, 1000);
+
+    } catch (err) {
+      console.error(err);
+      showToast('Server Error', 'Cannot connect to server. Make sure node server.js is running!', 'error');
+      btn.disabled = false;
+      btn.innerHTML = 'Sign in &nbsp;<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>';
+    }
+  }
+
+  setType('patient');
+</script>
+</body>
+</html>

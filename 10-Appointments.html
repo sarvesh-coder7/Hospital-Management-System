@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Appointment Management | Clinic Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* ================= HEADER ================= */
+
+        header {
+            background: #ffffff;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #333;
+            padding: 10px 18px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .back-btn:hover {
+            background: #f0f0f0;
+        }
+
+        /* ================= MAIN ================= */
+
+        .container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 35px auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #777;
+        }
+
+        .add-btn {
+            background: #222;
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .add-btn:hover {
+            background: #444;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #fafafa;
+            font-size: 14px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #fafafa;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ================= ACTION BUTTONS ================= */
+
+        .edit-btn,
+        .delete-btn {
+            border: none;
+            padding: 7px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .edit-btn {
+            background: #eeeeee;
+            color: #222;
+        }
+
+        .delete-btn {
+            background: #ffe1e1;
+            color: #b00020;
+        }
+
+        .edit-btn:hover {
+            background: #ddd;
+        }
+
+        .delete-btn:hover {
+            background: #ffcaca;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 14px;
+            padding: 28px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+        }
+
+        .close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #777;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #222;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
+        .submit-btn:hover {
+            background: #444;
+        }
+
+        /* ================= MESSAGE ================= */
+
+        .message {
+            display: none;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 15px 20px;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header>
+
+        <div class="logo">
+            Clinic Management System
+        </div>
+
+        <a href="05-Patient-dashboard.html" class="back-btn">
+            ← Dashboard
+        </a>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+
+        <div class="page-header">
+
+            <div>
+                <h1>Appointment Management</h1>
+                <p>Create, view, update and delete appointments.</p>
+            </div>
+
+            <button class="add-btn" onclick="openAddModal()">
+                + Add Appointment
+            </button>
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div id="message" class="message"></div>
+
+
+        <!-- ================= TABLE ================= -->
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Patient</th>
+                        <th>Email</th>
+                        <th>Doctor</th>
+                        <th>Specialty</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="appointmentTableBody">
+
+                    <tr>
+                        <td colspan="9" class="loading">
+                            Loading appointments...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= MODAL ================= -->
+
+    <div id="appointmentModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 id="modalTitle">
+                    Add Appointment
+                </h2>
+
+                <span class="close" onclick="closeModal()">
+                    &times;
+                </span>
+
+            </div>
+
+
+            <form id="appointmentForm">
+
+                <input type="hidden" id="appointmentId">
+
+
+                <!-- PATIENT -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="patientName">
+                            Patient Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="patientName"
+                            required
+                            placeholder="Enter patient name"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="patientEmail">
+                            Patient Email *
+                        </label>
+
+                        <input
+                            type="email"
+                            id="patientEmail"
+                            required
+                            placeholder="Enter email"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- DOCTOR -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="doctorName">
+                            Doctor Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="doctorName"
+                            required
+                            placeholder="Enter doctor name"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="specialty">
+                            Specialty *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="specialty"
+                            required
+                            placeholder="Example: Cardiology"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- DATE / TIME -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="appointmentDate">
+                            Appointment Date *
+                        </label>
+
+                        <input
+                            type="date"
+                            id="appointmentDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="appointmentTime">
+                            Appointment Time *
+                        </label>
+
+                        <input
+                            type="time"
+                            id="appointmentTime"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- TYPE / STATUS -->
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="consultationType">
+                            Consultation Type
+                        </label>
+
+                        <select id="consultationType">
+
+                            <option value="online">
+                                Online
+                            </option>
+
+                            <option value="in-clinic">
+                                In-Clinic
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select id="status">
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Confirmed">
+                                Confirmed
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTES -->
+
+                <div class="form-group">
+
+                    <label for="notes">
+                        Notes
+                    </label>
+
+                    <textarea
+                        id="notes"
+                        placeholder="Additional notes..."
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    id="submitButton"
+                >
+                    Create Appointment
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        /*
+         * IMPORTANT:
+         *
+         * If your Node.js server runs on another port,
+         * change this URL.
+         *
+         * Example:
+         * http://localhost:5000/api/appointments
+         */
+
+        const API_URL = 'http://localhost:3000/api/appointments';
+
+
+        // =====================================================
+        // LOAD APPOINTMENTS
+        // READ
+        // =====================================================
+
+        async function loadAppointments() {
+
+            const tableBody =
+                document.getElementById('appointmentTableBody');
+
+            try {
+
+                const response = await fetch(API_URL);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load appointments');
+                }
+
+                const appointments = await response.json();
+
+                tableBody.innerHTML = '';
+
+                if (appointments.length === 0) {
+
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="empty">
+                                No appointments found.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+                }
+
+
+                appointments.forEach(appointment => {
+
+                    const row = document.createElement('tr');
+
+                    const statusClass =
+                        appointment.status
+                            .toLowerCase()
+                            .replace('-', '');
+
+                    row.innerHTML = `
+
+                        <td>${escapeHTML(appointment.patientName)}</td>
+
+                        <td>${escapeHTML(appointment.patientEmail)}</td>
+
+                        <td>${escapeHTML(appointment.doctorName)}</td>
+
+                        <td>${escapeHTML(appointment.specialty)}</td>
+
+                        <td>${escapeHTML(appointment.appointmentDate)}</td>
+
+                        <td>${escapeHTML(appointment.appointmentTime)}</td>
+
+                        <td>${escapeHTML(appointment.consultationType)}</td>
+
+                        <td>
+                            <span class="status ${statusClass}">
+                                ${escapeHTML(appointment.status)}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="edit-btn"
+                                onclick="editAppointment('${appointment._id}')"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                class="delete-btn"
+                                onclick="deleteAppointment('${appointment._id}')"
+                            >
+                                Delete
+                            </button>
+
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+
+                });
+
+            } catch (error) {
+
+                console.error(error);
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="empty">
+                            Unable to load appointments.
+                            Make sure the backend server is running.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+
+        // =====================================================
+        // OPEN ADD MODAL
+        // =====================================================
+
+        function openAddModal() {
+
+            document.getElementById('modalTitle').textContent =
+                'Add Appointment';
+
+            document.getElementById('submitButton').textContent =
+                'Create Appointment';
+
+            document.getElementById('appointmentForm').reset();
+
+            document.getElementById('appointmentId').value = '';
+
+            document.getElementById('appointmentModal').style.display =
+                'flex';
+        }
+
+
+        // =====================================================
+        // CLOSE MODAL
+        // =====================================================
+
+        function closeModal() {
+
+            document.getElementById('appointmentModal').style.display =
+                'none';
+        }
+
+
+        // =====================================================
+        // CREATE / UPDATE
+        // =====================================================
+
+        document
+            .getElementById('appointmentForm')
+            .addEventListener('submit', async function(event) {
+
+                event.preventDefault();
+
+
+                const appointmentId =
+                    document.getElementById('appointmentId').value;
+
+
+                const appointmentData = {
+
+                    patientName:
+                        document.getElementById('patientName').value.trim(),
+
+                    patientEmail:
+                        document.getElementById('patientEmail').value.trim(),
+
+                    doctorName:
+                        document.getElementById('doctorName').value.trim(),
+
+                    specialty:
+                        document.getElementById('specialty').value.trim(),
+
+                    appointmentDate:
+                        document.getElementById('appointmentDate').value,
+
+                    appointmentTime:
+                        document.getElementById('appointmentTime').value,
+
+                    consultationType:
+                        document.getElementById('consultationType').value,
+
+                    status:
+                        document.getElementById('status').value,
+
+                    notes:
+                        document.getElementById('notes').value.trim()
+
+                };
+
+
+                try {
+
+                    let response;
+
+
+                    // =================================================
+                    // UPDATE
+                    // =================================================
+
+                    if (appointmentId) {
+
+                        response = await fetch(
+                            `${API_URL}/${appointmentId}`,
+                            {
+                                method: 'PUT',
+
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+
+                                body: JSON.stringify(appointmentData)
+                            }
+                        );
+
+                    }
+
+                    // =================================================
+                    // CREATE
+                    // =================================================
+
+                    else {
+
+                        response = await fetch(
+                            API_URL,
+                            {
+                                method: 'POST',
+
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+
+                                body: JSON.stringify(appointmentData)
+                            }
+                        );
+
+                    }
+
+
+                    const result = await response.json();
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            result.message ||
+                            'Operation failed'
+                        );
+
+                    }
+
+
+                    closeModal();
+
+                    showMessage(
+                        appointmentId
+                            ? 'Appointment updated successfully.'
+                            : 'Appointment created successfully.',
+                        'success'
+                    );
+
+
+                    loadAppointments();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    showMessage(
+                        error.message ||
+                        'Something went wrong.',
+                        'error'
+                    );
+
+                }
+
+            });
+
+
+        // =====================================================
+        // EDIT APPOINTMENT
+        // READ ONE
+        // =====================================================
+
+        async function editAppointment(id) {
+
+            try {
+
+                const response =
+                    await fetch(`${API_URL}/${id}`);
+
+                const appointment =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        appointment.message ||
+                        'Appointment not found'
+                    );
+
+                }
+
+
+                document.getElementById('appointmentId').value =
+                    appointment._id;
+
+                document.getElementById('patientName').value =
+                    appointment.patientName;
+
+                document.getElementById('patientEmail').value =
+                    appointment.patientEmail;
+
+                document.getElementById('doctorName').value =
+                    appointment.doctorName;
+
+                document.getElementById('specialty').value =
+                    appointment.specialty;
+
+                document.getElementById('appointmentDate').value =
+                    appointment.appointmentDate;
+
+                document.getElementById('appointmentTime').value =
+                    appointment.appointmentTime;
+
+                document.getElementById('consultationType').value =
+                    appointment.consultationType;
+
+                document.getElementById('status').value =
+                    appointment.status;
+
+                document.getElementById('notes').value =
+                    appointment.notes || '';
+
+
+                document.getElementById('modalTitle').textContent =
+                    'Edit Appointment';
+
+                document.getElementById('submitButton').textContent =
+                    'Update Appointment';
+
+
+                document.getElementById('appointmentModal').style.display =
+                    'flex';
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    error.message ||
+                    'Unable to load appointment.',
+                    'error'
+                );
+
+            }
+        }
+
+
+        // =====================================================
+        // DELETE APPOINTMENT
+        // =====================================================
+
+        async function deleteAppointment(id) {
+
+            const confirmDelete =
+                confirm(
+                    'Are you sure you want to delete this appointment?'
+                );
+
+
+            if (!confirmDelete) {
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/${id}`,
+                        {
+                            method: 'DELETE'
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        result.message ||
+                        'Failed to delete appointment'
+                    );
+
+                }
+
+
+                showMessage(
+                    'Appointment deleted successfully.',
+                    'success'
+                );
+
+
+                loadAppointments();
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    error.message ||
+                    'Unable to delete appointment.',
+                    'error'
+                );
+
+            }
+        }
+
+
+        // =====================================================
+        // MESSAGE
+        // =====================================================
+
+        function showMessage(text, type) {
+
+            const message =
+                document.getElementById('message');
+
+            message.textContent = text;
+
+            message.className =
+                `message ${type}`;
+
+            message.style.display = 'block';
+
+
+            setTimeout(() => {
+
+                message.style.display = 'none';
+
+            }, 4000);
+        }
+
+
+        // =====================================================
+        // BASIC HTML ESCAPE
+        // =====================================================
+
+        function escapeHTML(value) {
+
+            if (value === null || value === undefined) {
+                return '';
+            }
+
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+
+        // =====================================================
+        // CLOSE MODAL WHEN CLICKING OUTSIDE
+        // =====================================================
+
+        window.addEventListener('click', function(event) {
+
+            const modal =
+                document.getElementById('appointmentModal');
+
+            if (event.target === modal) {
+                closeModal();
+            }
+
+        });
+
+
+        // =====================================================
+        // INITIAL LOAD
+        // =====================================================
+
+        loadAppointments();
+
+    </script>
+
+</body>
+</html>
+```
